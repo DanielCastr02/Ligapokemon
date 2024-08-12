@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <Form :validation-schema="validationSchema" @submit="createTrainer()">
+                <Form :validation-schema="validationSchema" @submit="checked()">
                     <div class="mb-3">
                         Sexo
                         <select name="sexo" id="sexo" class="form-control" v-model="model.trainer.sexo">
@@ -72,6 +72,10 @@ import apiclient from '../../apiclient.js'
             }
         },
         methods:{
+        checked(){
+            this.createTrainer();
+            alert('Datos Guardados con exito!');
+        },
         createTrainer(){
             try {
                 apiclient.trainers.createTrainer(this.model.trainer).then(res =>{

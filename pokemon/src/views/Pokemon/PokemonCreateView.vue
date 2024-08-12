@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <Form :validation-schema="validationSchema" @submit="createPokemon()">
+                <Form :validation-schema="validationSchema" @submit="checked()">
                     <div class="mb-3">
                         Nombre
                         <Field name="nombre" id="nombre" type="text" class="form-control" v-model="model.pokemon.nombre"/>
@@ -81,6 +81,10 @@ import apiclient from '../../apiclient.js'
             }
         },
         methods:{
+            checked(){
+                this.createPokemon();
+                alert('Datos Guardados con exito!');
+            },
             createPokemon(){
             apiclient.pokemones.createPokemon(this.model.pokemon).then(res =>{
                 if(res.data.affectedRows == 1){

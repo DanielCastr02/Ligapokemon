@@ -33,8 +33,29 @@ export default {
         createPokemon(pokemon) {
             return axiosinstance.post('pokemon', pokemon);
         },
+        updatePokemon(pokemon) {
+            return axiosinstance.put(`pokemon/${pokemon.id}`, pokemon);
+        },
         deletePokemon(id) {
             return axiosinstance.delete(`pokemon/${id}`);
+        }
+    },
+
+    registros: {
+        getRegistros() {
+            return axiosinstance.get('registro');
+        },
+        getRegistroById(id) {
+            return axiosinstance.get(`registro/${id}`);
+        },
+        createRegistro(registro) {
+            return axiosinstance.post('registro', registro);
+        },
+        updateRegistro(registro) {
+            return axiosinstance.put(`registro/${registro.id}`, registro);
+        },
+        deleteRegistro(id) {
+            return axiosinstance.delete(`registro/${id}`);
         }
     }
 };

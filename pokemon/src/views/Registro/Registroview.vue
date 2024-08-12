@@ -3,8 +3,8 @@
         <div class="card">
             <div class="card-header">
                 <h4>
-                     Trainer
-                    <RouterLink to="/trainer/create" class="btn btn-primary float-end btn-custom">
+                     Registros
+                    <RouterLink to="/" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
                 </h4>
@@ -15,25 +15,20 @@
                 <thead class="thead-dark">
                     <tr>
                         <th>id</th>
-                        <th>sexo</th>
-                        <th>nombre</th>
-                        <th>edad</th>
-                        <th>dob</th>
+                        <th>idTrainer</th>
+                        <th>idPokemon</th>
                     </tr>
                 </thead>
-                <tbody v-if="trainers.length > 0">
-                    <tr v-for="(trainer, index) in trainers" :key="index">
-                        <td>{{ trainer.id }}</td>
-                        <td v-if="trainer.sexo == 0"> Chico</td>
-                        <td v-if="trainer.sexo == 1"> Chica</td>
-                        <td>{{ trainer.nombre }}</td>
-                        <td>{{ trainer.edad }}</td>
-                        <td>{{ trainer.dob }}</td>
+                <tbody v-if="registros.length > 0">
+                    <tr v-for="(registro, index) in registros" :key="index">
+                        <td>{{ registro.id }}</td>
+                        <td>{{ registro.idTrainer }}</td>
+                        <td>{{ registro.idpokemon }}</td>
                         <td class="text-center">
-                            <RouterLink :to="{ path: '/trainer/' + trainer.id + '/edit' }" class="btn btn-primary btn-custom">
-                                Editar
+                            <RouterLink :to="{ path: '/registro/' + registro.id + '/detalle' }" class="btn btn-primary btn-custom">
+                                Detalle
                             </RouterLink>
-                            <button class="btn btn-danger" @click="borrarTrainer(trainer.id)">
+                            <button class="btn btn-danger" @click="borrarRegistro(registro.id)">
                                 Borrar
                             </button>
                         </td>
@@ -54,28 +49,28 @@
     import apiclient from '../../apiclient.js';
     
     export default {
-        name: "trainersView",
+        name: "registroView",
         components: {
             RouterLink,
         },
         data() {
             return {
-                trainers: [],
+                registros: [],
             };
         },
         mounted() {
-            this.getTrainers();
+            this.getRegistros();
         },
         methods: {
-            getTrainers() {
-                apiclient.trainers.getTrainers().then(res => {
-                    this.trainers = res.data.trainer;
+            getRegistros() {
+                apiclient.registros.getRegistros().then(res => {
+                    this.registros = res.data.registro;
                 });
             },
-            borrarTrainer(idTrainerDelete) {
-                apiclient.trainers.deleteTrainer(idTrainerDelete).then(res => {
+            borrarRegistro(idRegistroDelete) {
+                apiclient.registros.deleteRegistro(idRegistroDelete).then(res => {
                     console.log(res);
-                    this.getTrainers();
+                    this.getRegistros();
                 });
             }
         }

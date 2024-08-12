@@ -1,4 +1,4 @@
-CREATE TABLE detalle(
+CREATE TABLE registro(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     idtrainer INT,
     idpokemon INT,
@@ -6,8 +6,8 @@ CREATE TABLE detalle(
     FOREIGN KEY (idpokemon) REFERENCES pokemon(id)
 );
 
-INSERT INTO detalle (id, idtrainer, idpokemon) VALUES (1, 1, 1);
-INSERT INTO detalle (id, idtrainer, idpokemon) VALUES (2, 1, 2);
+INSERT INTO registro (id, idtrainer, idpokemon) VALUES (1, 1, 1);
+INSERT INTO registro (id, idtrainer, idpokemon) VALUES (2, 1, 2);
 
 
 SELECT 
@@ -22,7 +22,7 @@ SELECT
     p.apodo AS pokemon_apodo,
     p.sexo AS pokemon_sexo
 FROM 
-    detalle d
+    registro r
 JOIN 
     trainer t ON d.idtrainer = t.id
 JOIN 

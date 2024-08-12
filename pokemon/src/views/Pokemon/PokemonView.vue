@@ -27,8 +27,12 @@
                         <td>{{ pokemon.nombre }}</td>
                         <td>{{ pokemon.tipo }}</td>
                         <td>{{ pokemon.apodo }}</td>
-                        <td>{{ pokemon.sexo }}</td>
+                        <td v-if="pokemon.sexo == 0"> Macho</td>
+                        <td v-if="pokemon.sexo == 1"> Hembra</td>
                         <td class="text-center">
+                            <RouterLink :to="{ path: '/pokemon/' + pokemon.id + '/edit' }" class="btn btn-primary btn-custom">
+                                Editar
+                            </RouterLink>
                             <button class="btn btn-danger" @click="borrarPokemon(pokemon.id)">
                                 Borrar
                             </button>

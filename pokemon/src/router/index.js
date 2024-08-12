@@ -11,6 +11,11 @@ import TrainerEditView from '../views/Trainers/TrainerEditView.vue'
 //POKEMON
 import PokemonView from '../views/Pokemon/PokemonView.vue'
 import PokemonCreateView from '../views/Pokemon/PokemonCreateView.vue'
+import PokemonEditView from '../views/Pokemon/PokemonEditView.vue'
+
+//REGISTROS
+import RegistroView from '../views/Registro/Registroview.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +25,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+    //TRAINERS
     {
       path: '/trainers',
       name: 'trainers',
@@ -35,6 +41,9 @@ const router = createRouter({
       name: 'edittrainer',
       component: TrainerEditView
     },
+
+
+    //POKEMONES
     {
       path: '/pokemones',
       name: 'pokemones',
@@ -45,7 +54,19 @@ const router = createRouter({
       name: 'createpokemones',
       component: PokemonCreateView
     },
+    {
+      path: '/pokemon/:id/edit',
+      name: 'editpokemon',
+      component: PokemonEditView
+    },
 
+
+    //REGISTROS
+    {
+      path: '/registros',
+      name: 'registros',
+      component: RegistroView
+    },
   ]
 })
 

@@ -24,6 +24,9 @@ import MenuView from './views/Home/Menuview.vue'
               <RouterLink class="navbar-brand" to="/pokemones">
                  Pokemones
               </RouterLink>
+              <RouterLink class="navbar-brand" to="/registros">
+                 Registros
+              </RouterLink>
             </li>
           </ul>
         </div>

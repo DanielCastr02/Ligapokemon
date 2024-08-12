@@ -41,10 +41,12 @@
                 <h2 class="text-center ">Pokémon</h2>
                 <form>
                     <div class="form-group">
-                        <label for="pokemonId">ID:</label>
-                        <select class="form-select" id="pokemonId">
-                            <option value="">Seleccionar</option>
-                            </select>
+                        ID
+                        <select name="sexo" id="sexo" class="form-control" v-model="model.trainer.id">
+                            <option value="0">1</option>
+                            <option value="1">2</option>
+                        </select>
+                        <ErrorMessage name="sexo" class="errorValidacion"/>
                     </div>
                     <div class="form-group">
                         <label for="pokemonNombre">Nombre:</label>

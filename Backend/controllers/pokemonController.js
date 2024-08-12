@@ -38,6 +38,21 @@ export const createPokemon = (req, res) => {
     });
 }
 
+
+export const updatePokemon = (req, res) => {
+    const id = req.params.id;
+    const pokemon = req.body;
+    pool.query('UPDATE pokemon SET ? WHERE id = ?;', [pokemon, id], (error) => {
+        if(error){
+            console.error('Error updating pokemon:', error);
+            res.status(500).send('Error updating pokemon');
+        } else {
+            console.log('Updating pokemon...');
+            res.status(201).json({message : 'Pokemon updated succesfully', pokemon: pokemon});
+        }
+    });
+}
+
 export const deletePokemon = (req, res) => {
     const id = req.params.id;
     pool.query('DELETE FROM pokemon WHERE id = ?;', [id], (error) => {
