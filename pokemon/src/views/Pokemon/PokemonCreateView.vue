@@ -84,6 +84,7 @@ import apiclient from '../../apiclient.js'
             checked(){
                 this.createPokemon();
                 alert('Datos Guardados con exito!');
+                this.$router.push('/pokemones');
             },
             createPokemon(){
             apiclient.pokemones.createPokemon(this.model.pokemon).then(res =>{

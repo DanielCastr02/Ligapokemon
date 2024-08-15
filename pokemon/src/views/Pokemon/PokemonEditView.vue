@@ -98,6 +98,7 @@ import apiclient from '../../apiclient.js'
             checked(){
                 this.updatePokemon();
                 alert('Datos Actualizado con exito!');
+                this.$router.push('/pokemones');
             },
             updatePokemon(){
             apiclient.pokemones.updatePokemon(this.model.pokemon).then(res =>{

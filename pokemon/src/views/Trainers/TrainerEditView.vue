@@ -47,13 +47,14 @@
 </template>
 <script>
 import axios from 'axios'
+import { RouterLink } from 'vue-router';
 import { Field, Form, ErrorMessage } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
 import apiclient from '../../apiclient.js'
     export default{
         nombre: 'editarTrainer',
-        components: {Field, Form, ErrorMessage},
+        components: {Field, Form, ErrorMessage, RouterLink},
         data(){
             const validationSchema = toTypedSchema(
                 zod.object({
@@ -79,40 +80,46 @@ import apiclient from '../../apiclient.js'
             this.getTrainer(this.$route.params.id);
         },
         methods:{
-            getTrainer(id){
-                apiclient.trainers.getTrainerById(id).then(res=>{
-                    this.model.trainer = res.data.trainer[0];
+            getTrainer(id) {
+                apiclient.trainers.getTrainerById(id).then(res => {
+                    const trainerData = res.data.trainer[0];
+                    this.model.trainer.id = trainerData.id;
+                    this.model.trainer.sexo = trainerData.sexo;
+                    this.model.trainer.nombre = trainerData.nombre;
+                    this.model.trainer.edad = trainerData.edad;
+                    this.model.trainer.dob = trainerData.dob.Date;
                 });
             },
             checked(){
                 this.updateTrainer();
                 alert('Datos Actualizado con exito!');
+                this.$router.push('/trainers');
             },
-        updateTrainer(){
-            apiclient.trainers.updateTrainer(this.model.trainer).then(res =>{
-                if(res.data.affectedRows == 1){
-                    this.model.trainer = {
-                        id: '',
-                        sexo:'',
-                        nombre:'',
-                        edad:'',
-                        dob: '',
+            updateTrainer(){
+                apiclient.trainers.updateTrainer(this.model.trainer).then(res =>{
+                    if(res.data.affectedRows == 1){
+                        this.model.trainer = {
+                            id: '',
+                            sexo:'',
+                            nombre:'',
+                            edad:'',
+                            dob: '',
+                        }
+                        this.mensaje = 1;
                     }
-                    this.mensaje = 1;
+                });
+            },
+            calculateAge(){
+                const dob = new Date(this.model.trainer.dob);
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const monthDiff = today.getMonth() - dob.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                    age--;
                 }
-            });
-        },
-        calculateAge(){
-            const dob = new Date(this.model.trainer.dob);
-            const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            const monthDiff = today.getMonth() - dob.getMonth();
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-                age--;
+                this.model.trainer.edad = age;
             }
-            this.model.trainer.edad = age;
         }
-    }
 }
 </script>
 

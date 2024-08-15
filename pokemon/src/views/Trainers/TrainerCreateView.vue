@@ -75,6 +75,7 @@ import apiclient from '../../apiclient.js'
         checked(){
             this.createTrainer();
             alert('Datos Guardados con exito!');
+            this.$router.push('/trainers');
         },
         createTrainer(){
             try {
@@ -85,7 +86,7 @@ import apiclient from '../../apiclient.js'
                             sexo:'',
                             nombre:'',
                             edad:'',
-                            dob: ''
+                            dob: '',
                         }
                         this.mensaje = 1;
                     }

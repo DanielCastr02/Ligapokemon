@@ -22,10 +22,13 @@
                 <tbody v-if="registros.length > 0">
                     <tr v-for="(registro, index) in registros" :key="index">
                         <td>{{ registro.id }}</td>
-                        <td>{{ registro.idTrainer }}</td>
+                        <td>{{ registro.idtrainer }}</td>
                         <td>{{ registro.idpokemon }}</td>
                         <td class="text-center">
-                            <RouterLink :to="{ path: '/registro/' + registro.id + '/detalle' }" class="btn btn-primary btn-custom">
+                            <RouterLink :to="{ path: '/registros/' + registro.id + '/edit' }" class="btn btn-primary btn-custom">
+                                Editar
+                            </RouterLink>
+                            <RouterLink :to="{ path: '/registros/detalle/' + registro.id }" class="btn btn-primary btn-custom">
                                 Detalle
                             </RouterLink>
                             <button class="btn btn-danger" @click="borrarRegistro(registro.id)">

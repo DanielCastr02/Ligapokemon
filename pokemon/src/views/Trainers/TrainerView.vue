@@ -14,11 +14,11 @@
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                     <tr>
-                        <th>id</th>
-                        <th>sexo</th>
-                        <th>nombre</th>
-                        <th>edad</th>
-                        <th>dob</th>
+                        <th>Id</th>
+                        <th>Sexo</th>
+                        <th>Nombre</th>
+                        <th>Edad</th>
+                        <th>DOB</th>
                     </tr>
                 </thead>
                 <tbody v-if="trainers.length > 0">
@@ -28,7 +28,7 @@
                         <td v-if="trainer.sexo == 1"> Chica</td>
                         <td>{{ trainer.nombre }}</td>
                         <td>{{ trainer.edad }}</td>
-                        <td>{{ trainer.dob }}</td>
+                        <td>{{ trainer.dob.slice(0,10) }}</td>
                         <td class="text-center">
                             <RouterLink :to="{ path: '/trainer/' + trainer.id + '/edit' }" class="btn btn-primary btn-custom">
                                 Editar

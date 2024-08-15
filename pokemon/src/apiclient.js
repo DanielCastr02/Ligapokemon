@@ -7,55 +7,58 @@ const axiosinstance = axios.create({
 export default {
     trainers: {
         getTrainers() {
-            return axiosinstance.get('trainer');
+            return axiosinstance.get('trainers');
         },
         getTrainerById(id) {
-            return axiosinstance.get(`trainer/${id}`);
+            return axiosinstance.get(`trainers/${id}`);
         },
         createTrainer(trainer) {
-            return axiosinstance.post('trainer', trainer);
+            return axiosinstance.post('trainers', trainer);
         },
         updateTrainer(trainer) {
-            return axiosinstance.put(`trainer/${trainer.id}`, trainer);
+            return axiosinstance.put(`trainers/${trainer.id}`, trainer);
         },
         deleteTrainer(id) {
-            return axiosinstance.delete(`trainer/${id}`);
+            return axiosinstance.delete(`trainers/${id}`);
         }
     },
 
     pokemones: {
         getPokemones() {
-            return axiosinstance.get('pokemon');
+            return axiosinstance.get('pokemones');
         },
         getPokemonById(id) {
-            return axiosinstance.get(`pokemon/${id}`);
+            return axiosinstance.get(`pokemones/${id}`);
         },
         createPokemon(pokemon) {
-            return axiosinstance.post('pokemon', pokemon);
+            return axiosinstance.post('pokemones', pokemon);
         },
         updatePokemon(pokemon) {
-            return axiosinstance.put(`pokemon/${pokemon.id}`, pokemon);
+            return axiosinstance.put(`pokemones/${pokemon.id}`, pokemon);
         },
         deletePokemon(id) {
-            return axiosinstance.delete(`pokemon/${id}`);
+            return axiosinstance.delete(`pokemones/${id}`);
         }
     },
 
     registros: {
         getRegistros() {
-            return axiosinstance.get('registro');
+            return axiosinstance.get('registros');
         },
         getRegistroById(id) {
-            return axiosinstance.get(`registro/${id}`);
+            return axiosinstance.get(`registros/${id}`);
         },
         createRegistro(registro) {
-            return axiosinstance.post('registro', registro);
+            return axiosinstance.post('registros', registro);
         },
         updateRegistro(registro) {
-            return axiosinstance.put(`registro/${registro.id}`, registro);
+            return axiosinstance.put(`registros/${registro.id}`, registro);
         },
         deleteRegistro(id) {
-            return axiosinstance.delete(`registro/${id}`);
+            return axiosinstance.delete(`registros/${id}`);
+        },
+        getRegistroDetalle(id){
+            return axiosinstance.get(`registros/detalle/${id}`);
         }
     }
 };

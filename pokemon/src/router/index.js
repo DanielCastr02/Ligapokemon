@@ -15,6 +15,8 @@ import PokemonEditView from '../views/Pokemon/PokemonEditView.vue'
 
 //REGISTROS
 import RegistroView from '../views/Registro/Registroview.vue'
+import RegistroDetalleView from '../views/Registro/RegistroDetalleView.vue'
+import RegistroEditView from '../views/Registro/RegistroEditView.vue'
 
 
 const router = createRouter({
@@ -66,6 +68,16 @@ const router = createRouter({
       path: '/registros',
       name: 'registros',
       component: RegistroView
+    },
+    {
+      path: '/registros/detalle/:id',
+      name: 'detalleregistro',
+      component: RegistroDetalleView
+    },
+    {
+      path: '/registros/:id/edit',
+      name: 'editregistros',
+      component: RegistroEditView
     },
   ]
 })
