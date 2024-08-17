@@ -6,5 +6,5 @@ CREATE TABLE pokemon(
     sexo INT
 );
 
-INSERT INTO pokemon (nombre, tipo, apodo, sexo) VALUES ('pikachu', 'electrico', 'PIKA', 0);
+INSERT INTO pokemon (nombre, tipo, apodo, sexo) VALUES ('pikachu', 'electrico', 'pikapi', 0);
 INSERT INTO pokemon (nombre, tipo, apodo, sexo) VALUES ('charmander', 'fuego', 'char', 1);

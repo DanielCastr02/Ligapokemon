@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <Form :validation-schema="validationSchema" @submit="checked()">
+                <form :validation-schema="validationSchema" @submit="checked()">
                     <div class="mb-3">
                         ID
                         <Field name="id" id="id" type="text" class="form-control" :disabled="true"  v-model="model.pokemon.id"/>
@@ -51,20 +51,19 @@
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary"> Guardar </button>
                     </div>
-                </Form>
+                </form>
             </div>
         </div>
     </div>
 </template>
 <script>
-import axios from 'axios'
-import { Field, Form, ErrorMessage } from 'vee-validate';
+import { Field, ErrorMessage } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
 import apiclient from '../../apiclient.js'
     export default{
         nombre: 'editarPokemon',
-        components: {Field, Form, ErrorMessage},
+        components: {Field, ErrorMessage},
         data(){
             const validationSchema = toTypedSchema(
                 zod.object({

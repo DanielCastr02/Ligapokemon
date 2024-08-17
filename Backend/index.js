@@ -3,6 +3,7 @@ import pool from './pool.js';
 import cors from 'cors';
 import trainersRoutes from './routes/trainersRoutes.js';
 import pokemonRoutes from './routes/pokemonRoutes.js';
+import registrosRoutes from './routes/registroRoutes.js'
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 
 app.use(trainersRoutes);
 app.use(pokemonRoutes);
+app.use(registrosRoutes);
 
 app.get('/', ()=>{
     console.log('Here is the rabbit');

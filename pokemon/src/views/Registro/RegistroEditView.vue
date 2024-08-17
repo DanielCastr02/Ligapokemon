@@ -4,53 +4,56 @@
             <div class="card-header">
                 <h4> Editar Registro</h4>
             </div>
-            <div class="card-body row" >
-                <Form>
+            <Form class="card-body row" @submit="checked()">
+                <div>
                     <div class="mb-3">
-                        idRegistro
+                        Registro ID
                         <Field name="id" id="id" type="text" class="form-control" :disabled="true"  v-model="model.registro.id"/>
                         <ErrorMessage name="id" class="errorValidacion"/>
                     </div>
-                </Form>
-                <Form  class="col-md-6">
+                </div>
+                <div  class="col-md-6">
                     <div class="form-group">
-                            <label for="trainerId">ID</label>
+                            <label for="trainerId">Trainer ID</label>
                             <select id="trainerId" class="form-control" v-model="selectedTrainerId" @change="loadTrainerDetails">
                                 <option v-for="trainer in trainers" :key="trainer.id" :value="trainer.id">{{ trainer.id }}</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="nombre">Nombre:</label>
+                            <label for="nombre">Trainer Nombre</label>
                             <input name="nombre" id="nombre" type="text" class="form-control" v-model="model.trainer.nombre" :disabled="true" />
                         </div>
-                </Form>
-                <Form  class="col-md-6">
+                </div>
+                <div  class="col-md-6">
                     <div class="form-group">
-                            <label for="pokemonId">ID</label>
+                            <label for="pokemonId">Pokemon ID</label>
                             <select id="pokemonId" class="form-control" v-model="selectedPokemonId" @change="loadPokemonDetails">
                                 <option v-for="pokemon in pokemones" :key="pokemon.id" :value="pokemon.id">{{ pokemon.id }}</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="pokemonApodo">Apodo:</label>
+                            <label for="pokemonApodo">Pokemon Apodo</label>
                             <input type="text" class="form-control" id="pokemonApodo" v-model="model.pokemon.apodo" :disabled="true" />
                         </div>
-                </Form>
-            </div>
+                </div>
+                <div class="mb-3">
+                        <button type="submit" class="btn btn-primary"> Actualizar </button>
+                </div>
+            </Form>
         </div>
     </div>
 </template>
 <script>
-import axios from 'axios'
-import { RouterLink } from 'vue-router';
-import { Field, Form, ErrorMessage } from 'vee-validate';
+import { Field, ErrorMessage } from 'vee-validate';
 import apiclient from '../../apiclient.js'
     export default{
         nombre: 'editarTrainer',
-        components: {Field, Form, ErrorMessage, RouterLink},
+        components: {Field, ErrorMessage},
         data(){
             return{
                 mensaje: 0,
+                trainers: [], 
+                pokemones: [],
                 model:{
                     registro:{
                         id: '',
@@ -75,7 +78,9 @@ import apiclient from '../../apiclient.js'
             }
         },
         mounted(){
-            this.getTrainer(this.$route.params.id);
+            this.getRegistro(this.$route.params.id);
+            this.getTrainers();
+            this.getPokemones();
         },
         methods:{
             checked(){
@@ -108,6 +113,7 @@ import apiclient from '../../apiclient.js'
             loadTrainerDetails() {
                 if (this.selectedTrainerId) {
                     this.getTrainer(this.selectedTrainerId);
+                    this.model.registro.idtrainer = this.selectedTrainerId;
                 }
             },
             getTrainer(id) {
@@ -120,6 +126,7 @@ import apiclient from '../../apiclient.js'
             loadPokemonDetails() {
                 if (this.selectedPokemonId) {
                     this.getPokemon(this.selectedPokemonId);
+                    this.model.registro.idpokemon = this.selectedPokemonId;
                 }
             },
             getPokemon(id) {
@@ -128,7 +135,24 @@ import apiclient from '../../apiclient.js'
                     this.model.pokemon.id = pokemonData.id;
                     this.model.pokemon.apodo = pokemonData.apodo;
                 });
+            },
+            getRegistro(id) {
+                apiclient.registros.getRegistroDetalle(id).then(res => {
+                    const registroData = res.data.registro;
+
+                    //Registro
+                    this.model.registro.id = registroData.id;
+                    this.model.registro.idtrainer = registroData.trainer_id;
+                    this.model.registro.idpokemon = registroData.pokemon_id;
+                    //Trainer
+                    this.model.trainer.id = registroData.trainer_id;
+                    this.model.trainer.nombre = registroData.trainer_nombre;
+                    //Pokemon
+                    this.model.pokemon.id = registroData.pokemon_id;
+                    this.model.pokemon.apodo = registroData.pokemon_apodo;
+                });
             }
+            
         }
 }
 </script>

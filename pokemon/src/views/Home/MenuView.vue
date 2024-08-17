@@ -69,22 +69,17 @@
 </template>
 
 <script>
-    import { RouterLink } from 'vue-router';
-    import axios from 'axios';
-    import { Field, Form, ErrorMessage } from 'vee-validate';
-    import * as zod from 'zod';
     import apiclient from '../../apiclient.js';
 
     export default {
-        name: "trainersView",
-        components: {
-            RouterLink,
-        },
+        name: "registroView",
         data() {
             return {
                 mensaje: 0,
                 trainers: [], 
-                pokemones: [],      
+                pokemones: [],
+                originalPokemones: [],
+                registros: [],  
                 selectedTrainerId: '',  
                 selectedPokemonId: '',  
                 model: {
@@ -112,6 +107,7 @@
         mounted() {
             this.getTrainers();
             this.getPokemones();
+            this.getRegistros()
         },
         methods: {
             checked(){
@@ -142,29 +138,27 @@
             getPokemones() {
                 apiclient.pokemones.getPokemones().then(res => {
                     this.pokemones = res.data.pokemon;
+                    this.originalPokemones = [...this.pokemones];
                 });
             },
-            loadTrainerDetails() {
-                if (this.selectedTrainerId) {
-                    this.getTrainer(this.selectedTrainerId);
-                    this.model.registro.idtrainer = this.selectedTrainerId; 
-                }
+            getRegistros() {
+                apiclient.registros.getRegistros().then(res => {
+                    this.registros = res.data.registro;
+                });
             },
             getTrainer(id) {
                 apiclient.trainers.getTrainerById(id).then(res => {
                     const trainerData = res.data.trainer[0];
                     this.model.trainer.id = trainerData.id;
-                    this.model.trainer.sexo = trainerData.sexo;
+                    if(trainerData.sexo == 0){
+                        this.model.trainer.sexo = 'Chico'
+                    }else{
+                        this.model.trainer.sexo = 'Chica'
+                    }
                     this.model.trainer.nombre = trainerData.nombre;
                     this.model.trainer.edad = trainerData.edad;
                     this.model.trainer.dob = new Date(trainerData.dob).toISOString().split('T')[0];
                 });
-            },
-            loadPokemonDetails() {
-                if (this.selectedPokemonId) {
-                    this.getPokemon(this.selectedPokemonId);
-                    this.model.registro.idpokemon = this.selectedPokemonId;
-                }
             },
             getPokemon(id) {
                 apiclient.pokemones.getPokemonById(id).then(res => {
@@ -173,8 +167,36 @@
                     this.model.pokemon.nombre = pokemonData.nombre;
                     this.model.pokemon.tipo = pokemonData.tipo;
                     this.model.pokemon.apodo = pokemonData.apodo;
-                    this.model.pokemon.sexo = pokemonData.sexo;
+                    if(pokemonData.sexo == 0){
+                        this.model.pokemon.sexo = 'Macho'
+                    }else{
+                        this.model.pokemon.sexo = 'Hembra'
+                    }
                 });
+            },
+            loadTrainerDetails() {
+                if (this.selectedTrainerId) {
+                    this.getTrainer(this.selectedTrainerId);
+                    this.model.registro.idtrainer = this.selectedTrainerId;
+                    this.pokemones = [...this.originalPokemones];
+                    this.validarPokemon(this.selectedTrainerId)
+                }
+            },
+            loadPokemonDetails() {
+                if (this.selectedPokemonId) {
+                    this.getPokemon(this.selectedPokemonId);
+                    this.model.registro.idpokemon = this.selectedPokemonId;
+                }
+            },
+            validarPokemon(trainer_id) {
+                // Filtrar registros por trainer_id
+                const trainerRegistros = this.registros.filter(registro => registro.idtrainer === trainer_id);
+
+                // Obtener los IDs de los pokemones del entrenador
+                const pokemonIdsToRemove = trainerRegistros.map(registro => registro.idpokemon);
+
+                // Filtrar la lista de pokemones para eliminar los que coincidan
+                this.pokemones = this.pokemones.filter(pokemon => !pokemonIdsToRemove.includes(pokemon.id));
             }
         }
     };

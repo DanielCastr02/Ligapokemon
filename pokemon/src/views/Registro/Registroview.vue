@@ -17,6 +17,7 @@
                         <th>id</th>
                         <th>idTrainer</th>
                         <th>idPokemon</th>
+                        <th>estado</th>
                     </tr>
                 </thead>
                 <tbody v-if="registros.length > 0">
@@ -24,7 +25,15 @@
                         <td>{{ registro.id }}</td>
                         <td>{{ registro.idtrainer }}</td>
                         <td>{{ registro.idpokemon }}</td>
+                        <td v-if="registro.estado == 0"> Inactivo</td>
+                        <td v-if="registro.estado == 1"> Activo</td>
                         <td class="text-center">
+                            <button v-if="registro.estado == 0" class="btn btn-success" @click="cambiarEstado(registro.id)">
+                                Activar
+                            </button>
+                            <button v-if="registro.estado == 1" class="btn btn-danger" @click="cambiarEstado(registro.id)">
+                                Desactivar
+                            </button>
                             <RouterLink :to="{ path: '/registros/' + registro.id + '/edit' }" class="btn btn-primary btn-custom">
                                 Editar
                             </RouterLink>
@@ -59,6 +68,14 @@
         data() {
             return {
                 registros: [],
+                model:{
+                    registro:{
+                        id: '',
+                        idtrainer:'',
+                        idpokemon:'',
+                        estado:'',
+                    }
+                }
             };
         },
         mounted() {
@@ -74,6 +91,30 @@
                 apiclient.registros.deleteRegistro(idRegistroDelete).then(res => {
                     console.log(res);
                     this.getRegistros();
+                });
+            },
+            cambiarEstado(id) {
+                apiclient.registros.getRegistroById(id).then(res => {
+                    this.model.registro = res.data.registro[0];
+                    console.log("Modelo antes del update:", this.model.registro);
+                    
+                    this.model.registro.estado = this.model.registro.estado === 0 ? 1 : 0;
+
+                    apiclient.registros.updateRegistro(this.model.registro).then(res => {
+                        if (res.data.affectedRows === 1) {
+                            this.model.registro = {
+                                id: '',
+                                idtrainer: '',
+                                idpokemon: '',
+                                estado: '',
+                            };
+                            this.getRegistros();  // Recargar la lista de registros
+                        }
+                    }).catch(error => {
+                        console.error("Error durante el update:", error);
+                    });
+                }).catch(error => {
+                    console.error("Error en getRegistroById:", error);
                 });
             }
         }

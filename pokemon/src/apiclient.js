@@ -20,6 +20,9 @@ export default {
         },
         deleteTrainer(id) {
             return axiosinstance.delete(`trainers/${id}`);
+        },
+        getTrainerDetalle(id){
+            return axiosinstance.get(`trainers/detalle/${id}`);
         }
     },
 

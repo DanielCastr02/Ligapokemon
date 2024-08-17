@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <Form :validation-schema="validationSchema" @submit="checked()">
+                <form :validation-schema="validationSchema" @submit="checked()">
                     <div class="mb-3">
                         Sexo
                         <select name="sexo" id="sexo" class="form-control" v-model="model.trainer.sexo">
@@ -35,20 +35,19 @@
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary"> Guardar </button>
                     </div>
-                </Form> 
+                </form> 
             </div>
         </div>
     </div>
 </template>
 <script>
-import axios from 'axios'
-import { Field, Form, ErrorMessage } from 'vee-validate';
+import { Field, ErrorMessage } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
 import apiclient from '../../apiclient.js'
     export default{
         nombre: 'createTrainer()',
-        components: {Field, Form, ErrorMessage},
+        components: {Field, ErrorMessage},
         data(){
             console.log(this.model);
 

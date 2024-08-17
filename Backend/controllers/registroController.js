@@ -1,6 +1,6 @@
 import pool from "../pool.js";
 
-export const getRegistro = (req, res) => {
+export const getRegistros = (req, res) => {
     pool.query('SELECT * FROM registro;', (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
@@ -64,4 +64,31 @@ export const deleteRegistro = (req, res) => {
             res.status(201).json({message : 'Registro deleted succesfully'});
         }
     });
+    
 }
+
+export const getRegistroDetalle = (req, res) => {
+    const id = req.params.id;
+    pool.query(
+        `SELECT r.id AS id, t.id AS trainer_id, t.nombre AS trainer_nombre, t.sexo AS trainer_sexo,
+                t.edad AS trainer_edad, t.dob AS trainer_dob, p.id AS pokemon_id, 
+                p.nombre AS pokemon_nombre, p.tipo AS pokemon_tipo, 
+                p.apodo AS pokemon_apodo, p.sexo AS pokemon_sexo 
+         FROM registro r 
+         JOIN trainer t ON r.idtrainer = t.id 
+         JOIN pokemon p ON r.idpokemon = p.id 
+         WHERE r.id = ?;`, 
+        [id], 
+        (error, results) => {
+            if (error) {
+                console.error('Error getting registro:', error);
+                res.status(500).send('Error getting registro');
+            } else if (results.length === 0) {
+                res.status(404).json({ message: 'Registro no encontrado' });
+            } else {
+                console.log('Fetching registro...');
+                res.status(200).json({ message: 'Registro fetched successfully', registro: results[0] });
+            }
+        }
+    );
+};

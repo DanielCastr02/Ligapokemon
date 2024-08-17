@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { getRegistro, getRegistroById, createRegistro, deleteRegistro, updateRegistro } from "../controllers/registroController.js";
+import { getRegistros, getRegistroById, createRegistro, deleteRegistro, updateRegistro, getRegistroDetalle } from '../controllers/registroController.js'
 
 const registroRoutes = Router();
 
-registroRoutes.get('/api/registro', getRegistro);
-registroRoutes.get('/api/registroregistro/:id', getRegistroById);
-registroRoutes.post('/api/registro', createRegistro);
-registroRoutes.put('/api/registro/:id', updateRegistro);
-registroRoutes.delete('/api/registro/:id', deleteRegistro);
+registroRoutes.get('/api/registros', getRegistros);
+registroRoutes.get('/api/registros/:id', getRegistroById);
+registroRoutes.post('/api/registros', createRegistro);
+registroRoutes.put('/api/registros/:id', updateRegistro);
+registroRoutes.delete('/api/registros/:id', deleteRegistro);
+registroRoutes.get('/api/registros/detalle/:id', getRegistroDetalle)
 
 export default registroRoutes;

@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-header">
                 <h4>
-                     Pokemon
+                     Pokemones
                     <RouterLink to="/pokemones/create" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>

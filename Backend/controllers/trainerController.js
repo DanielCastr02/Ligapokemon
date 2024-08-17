@@ -12,6 +12,7 @@ export const getTrainer = (req, res) => {
     });
 }
 
+
 export const getTrainerById = (req, res) => {
     const id = req.params.id;
     pool.query('SELECT * FROM trainer WHERE id = ?;', [id], (error, results) => {
@@ -65,4 +66,27 @@ export const deleteTrainer = (req, res) => {
     });
 }
 
-// pool.query('UPDATE trainer SET sexo = ?, nombre = ?, edad = ?, dob = ? WHERE id = ?;', [trainer.sexo,trainer.nombre,trainer.edad, trainer.dob, id], (error) => {
+export const getTrainerDetalle = (req, res) => {
+    const id = req.params.id;
+    pool.query(
+        `SELECT r.id AS id, t.id AS trainer_id, t.nombre AS trainer_nombre, p.id AS pokemon_id, 
+                p.nombre AS pokemon_nombre, p.tipo AS pokemon_tipo, 
+                p.apodo AS pokemon_apodo, p.sexo AS pokemon_sexo 
+         FROM registro r 
+         JOIN trainer t ON r.idtrainer = t.id 
+         JOIN pokemon p ON r.idpokemon = p.id 
+         WHERE t.id = ?;`, 
+        [id], 
+        (error, results) => {
+            if (error) {
+                console.error('Error getting registro:', error);
+                res.status(500).send('Error getting registro');
+            } else if (results.length === 0) {
+                res.status(404).json({ message: 'Registro no encontrado' });
+            } else {
+                console.log('Fetching registro...');
+                res.status(200).json({ message: 'Registro fetched successfully', registro: results});
+            }
+        }
+    );
+};

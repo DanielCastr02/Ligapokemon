@@ -6,6 +6,7 @@ import HomeView from '../views/Home/HomeView.vue'
 import TrainerView from '../views/Trainers/TrainerView.vue'
 import TrainerCreateView from '../views/Trainers/TrainerCreateView.vue'
 import TrainerEditView from '../views/Trainers/TrainerEditView.vue'
+import TrainerDetalleView from '../views/Trainers/TrainerDetalleView.vue'
 
 
 //POKEMON
@@ -42,6 +43,11 @@ const router = createRouter({
       path: '/trainer/:id/edit',
       name: 'edittrainer',
       component: TrainerEditView
+    },
+    {
+      path: '/trainers/detalle/:id',
+      name: 'detalletrainer',
+      component: TrainerDetalleView
     },
 
 

@@ -1,6 +1,5 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import MenuView from './views/Home/Menuview.vue'
 </script>
 
 <template>
@@ -19,13 +18,13 @@ import MenuView from './views/Home/Menuview.vue'
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <RouterLink class="navbar-brand" to="/trainers">
-                 Trainers
+                <Icon icon="ic:twotone-catching-pokemon"/>Trainers
               </RouterLink>
               <RouterLink class="navbar-brand" to="/pokemones">
-                 Pokemones
+                <Icon icon="hugeicons:pokemon"/> Pokemones
               </RouterLink>
               <RouterLink class="navbar-brand" to="/registros">
-                 Registros
+                <Icon icon="fa-regular:address-book"></Icon> Registros
               </RouterLink>
             </li>
           </ul>
@@ -36,6 +35,9 @@ import MenuView from './views/Home/Menuview.vue'
 
   <RouterView />
 </template>
+<script>
+import { Icon } from "@iconify/vue";
+</script>
 
   
 <style scoped>
