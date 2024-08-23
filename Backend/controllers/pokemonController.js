@@ -1,33 +1,36 @@
 import pool from "../pool.js";
 
 export const getPokemon = (req, res) => {
-    pool.query('SELECT * FROM pokemon;', (error, results) => {
+    pool.query('SELECT * FROM getPokemones();', (error, results) => {
         if(error){
             console.error('Error getting pokemon:', error);
             res.status(500).send('Error getting pokemon');
         } else {
             console.log('Fetching pokemon...');
-            res.status(201).json({message : 'pokemones fetched succesfully', pokemon: results});
+            res.status(201).json({message : 'pokemones fetched succesfully', pokemon: results.rows});
         }
     });
 }
 
 export const getPokemonById = (req, res) => {
     const id = req.params.id;
-    pool.query('SELECT * FROM pokemon WHERE id = ?;', [id], (error, results) => {
+    pool.query('SELECT * FROM getPokemonById($1);', [id], (error, results) => {
         if(error){
             console.error('Error getting pokemon:', error);
             res.status(500).send('Error getting pokemon');
         } else {
             console.log('Fetching pokemon...');
-            res.status(201).json({message : 'Pokemon fetched succesfully', pokemon: results});
+            res.status(201).json({message : 'Pokemon fetched succesfully', pokemon: results.rows});
         }
     });
 }
 
 export const createPokemon = (req, res) => {
     const pokemon = req.body;
-    pool.query('INSERT INTO pokemon SET ?;', pokemon, (error) => {
+    pool.query(
+        'SELECT createPokemon($1::json);',
+        [pokemon],
+        (error) => {
         if(error){
             console.error('Error creating pokemon:', error);
             res.status(500).send('Error creating pokemon');
@@ -42,7 +45,9 @@ export const createPokemon = (req, res) => {
 export const updatePokemon = (req, res) => {
     const id = req.params.id;
     const pokemon = req.body;
-    pool.query('UPDATE pokemon SET ? WHERE id = ?;', [pokemon, id], (error) => {
+    pool.query('SELECT updatePokemon($1, $2::json)', 
+        [id, pokemon], 
+        (error) => {
         if(error){
             console.error('Error updating pokemon:', error);
             res.status(500).send('Error updating pokemon');
@@ -55,7 +60,7 @@ export const updatePokemon = (req, res) => {
 
 export const deletePokemon = (req, res) => {
     const id = req.params.id;
-    pool.query('DELETE FROM pokemon WHERE id = ?;', [id], (error) => {
+    pool.query('SELECT deletePokemon($1);', [id], (error) => {
         if(error){
             console.error('Error deleting pokemon:', error);
             res.status(500).send('Error deleting pokemon');

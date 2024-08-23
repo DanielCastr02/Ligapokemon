@@ -1,33 +1,36 @@
 import pool from "../pool.js";
 
 export const getRegistros = (req, res) => {
-    pool.query('SELECT * FROM registro;', (error, results) => {
+    pool.query('SELECT * FROM getRegistros();', (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
         } else {
             console.log('Fetching registro...');
-            res.status(201).json({message : 'Registro fetched succesfully', registro: results});
+            res.status(201).json({message : 'Registro fetched succesfully', registro: results.rows});
         }
     });
 }
 
 export const getRegistroById = (req, res) => {
     const id = req.params.id;
-    pool.query('SELECT * FROM registro WHERE id = ?;', [id], (error, results) => {
+    pool.query('SELECT * FROM getRegistroById($1);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
         } else {
             console.log('Fetching registro...');
-            res.status(201).json({message : 'Registro fetched succesfully', registro: results});
+            res.status(201).json({message : 'Registro fetched succesfully', registro: results.rows});
         }
     });
 }
 
 export const createRegistro = (req, res) => {
     const registro = req.body;
-    pool.query('INSERT INTO registro SET ?;', registro, (error) => {
+    pool.query(
+        'SELECT createRegistro($1::json);',
+        [registro],
+        (error) => {
         if(error){
             console.error('Error creating registro:', error);
             res.status(500).send('Error creating registro');
@@ -42,7 +45,9 @@ export const createRegistro = (req, res) => {
 export const updateRegistro = (req, res) => {
     const id = req.params.id;
     const registro = req.body;
-    pool.query('UPDATE registro SET ? WHERE id = ?;', [registro, id], (error) => {
+    pool.query('SELECT updateRegistro($1, $2::json)', 
+        [id, registro], 
+        (error) => {
         if(error){
             console.error('Error updating registro:', error);
             res.status(500).send('Error updating registro');
@@ -55,7 +60,7 @@ export const updateRegistro = (req, res) => {
 
 export const deleteRegistro = (req, res) => {
     const id = req.params.id;
-    pool.query('DELETE FROM registro WHERE id = ?;', [id], (error) => {
+    pool.query('SELECT deleteRegistro($1);', [id], (error) => {
         if(error){
             console.error('Error deleting registro:', error);
             res.status(500).send('Error deleting registro');
@@ -69,17 +74,7 @@ export const deleteRegistro = (req, res) => {
 
 export const getRegistroDetalle = (req, res) => {
     const id = req.params.id;
-    pool.query(
-        `SELECT r.id AS id, t.id AS trainer_id, t.nombre AS trainer_nombre, t.sexo AS trainer_sexo,
-                t.edad AS trainer_edad, t.dob AS trainer_dob, p.id AS pokemon_id, 
-                p.nombre AS pokemon_nombre, p.tipo AS pokemon_tipo, 
-                p.apodo AS pokemon_apodo, p.sexo AS pokemon_sexo 
-         FROM registro r 
-         JOIN trainer t ON r.idtrainer = t.id 
-         JOIN pokemon p ON r.idpokemon = p.id 
-         WHERE r.id = ?;`, 
-        [id], 
-        (error, results) => {
+    pool.query('SELECT * FROM getRegistroDetalle($1)', [id], (error, results) => {
             if (error) {
                 console.error('Error getting registro:', error);
                 res.status(500).send('Error getting registro');
@@ -87,8 +82,45 @@ export const getRegistroDetalle = (req, res) => {
                 res.status(404).json({ message: 'Registro no encontrado' });
             } else {
                 console.log('Fetching registro...');
-                res.status(200).json({ message: 'Registro fetched successfully', registro: results[0] });
+                res.status(200).json({ message: 'Registro fetched successfully', registro: results.rows});
             }
         }
     );
-};
+}
+export const getRegistrosByTrainerId = (req, res) => {
+    const id = req.params.id;
+    pool.query('SELECT * FROM getRegistrosByTrainerId($1)', [id], (error, results) => {
+        if(error){
+            console.error('Error getting registro:', error);
+            res.status(500).send('Error getting registro');
+        } else {
+            console.log('Fetching registro...');
+            res.status(201).json({message : 'Registro fetched succesfully', registro: results.rows});
+        }
+    });
+}
+
+export const deleteRegistrosByTrainerId = (req, res) => {
+    const id = req.params.id;
+    pool.query('SELECT deleteRegistrosByTrainerId($1)', [id], (error, results) => {
+        if(error){
+            console.error('Error getting registro:', error);
+            res.status(500).send('Error getting registro');
+        } else {
+            console.log('Fetching registro...');
+            res.status(201).json({message : 'Registro fetched succesfully', registro: results});
+        }
+    });
+}
+export const deleteRegistrosByPokemonId = (req, res) => {
+    const id = req.params.id;
+    pool.query('SELECT deleteRegistrosByPokemonId($1)', [id], (error, results) => {
+        if(error){
+            console.error('Error getting registro:', error);
+            res.status(500).send('Error getting registro');
+        } else {
+            console.log('Fetching registro...');
+            res.status(201).json({message : 'Registro fetched succesfully', registro: results});
+        }
+    });
+}
