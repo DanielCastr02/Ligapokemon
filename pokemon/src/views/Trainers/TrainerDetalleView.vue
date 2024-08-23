@@ -48,7 +48,7 @@
 import { Field, ErrorMessage } from 'vee-validate';
 import apiclient from '../../apiclient.js'
     export default{
-        nombre: 'detalleRegistro',
+        nombre: 'detalleTrainer',
         components: {Field, ErrorMessage},
         data(){
             return{
@@ -56,8 +56,6 @@ import apiclient from '../../apiclient.js'
                 registros: [],
                 model:{
                     registro:{
-                        id: '',
-                        trainer_id: '',
                         trainer_nombre: '',
                         pokemon_id: '',
                         pokemon_nombre: '',

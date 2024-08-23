@@ -23,7 +23,11 @@ export default {
         },
         getTrainerDetalle(id){
             return axiosinstance.get(`trainers/detalle/${id}`);
-        }
+        },
+        //filtros
+        getTrainersByGender(sexo){
+            return axiosinstance.get(`trainers/sexo/${sexo}`);
+        },
     },
 
     pokemones: {
@@ -62,6 +66,15 @@ export default {
         },
         getRegistroDetalle(id){
             return axiosinstance.get(`registros/detalle/${id}`);
+        },
+        getRegistrosByTrainerId(id){
+            return axiosinstance.get(`registros/trainer/${id}`);
+        },
+        deleteRegistrosByTrainerId(id){
+            return axiosinstance.delete(`registros/trainer/${id}`);
+        },
+        deleteRegistrosByPokemonId(id){
+            return axiosinstance.delete(`registros/pokemon/${id}`);
         }
     }
 };

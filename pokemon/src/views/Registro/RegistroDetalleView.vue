@@ -94,7 +94,7 @@ import apiclient from '../../apiclient.js'
                 apiclient.registros.getRegistroDetalle(id).then(res => {
                     // this.model.registro = res.data.registro;
 
-                    const registroData = res.data.registro;
+                    const registroData = res.data.registro[0];
                     //Registro
                     this.model.registro.id = registroData.id;
                     //Trainer
@@ -106,7 +106,7 @@ import apiclient from '../../apiclient.js'
                     }
                     this.model.registro.trainer_nombre = registroData.trainer_nombre;
                     this.model.registro.trainer_edad = registroData.trainer_edad;
-                    this.model.registro.trainer_dob = new Date(registroData.trainer_dob).toISOString().split('T')[0];
+                    this.model.registro.trainer_dob = registroData.trainer_dob.slice(0,10);
                     //Pokemon
                     this.model.registro.pokemon_id = registroData.pokemon_id;
                     this.model.registro.pokemon_nombre = registroData.pokemon_nombre;
@@ -115,7 +115,7 @@ import apiclient from '../../apiclient.js'
                     if(registroData.pokemon_sexo == 0){
                         this.model.registro.pokemon_sexo = 'Macho'
                     }else{
-                        this.model.registro.pokemon_sexo = 'Macho'
+                        this.model.registro.pokemon_sexo = 'Hembra'
                     }
                     
                 });

@@ -19,6 +19,7 @@
                         <th>Tipo</th>
                         <th>Apodo</th>
                         <th>Sexo</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody v-if="pokemones.length > 0">
@@ -76,8 +77,18 @@
                 apiclient.pokemones.deletePokemon(idPokemonDelete).then(res => {
                     console.log(res);
                     this.getPokemones();
+                }).catch(error => {
+                    if(confirm("Este pokemon ya esta registrado a un trainer. ¿Desea eliminar los registros?", error)){
+                        apiclient.registros.deleteRegistrosByPokemonId(idPokemonDelete).then(res => {
+                            console.log(res);
+                            alert('Registros Eliminados...')
+                            this.borrarPokemon(idPokemonDelete);
+                            this.getPokemones();
+                        });
+                    }
+
                 });
-            }
+            },
         }
     };
 </script>

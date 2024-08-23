@@ -22,16 +22,24 @@
                     <div class="mb-3">
                         Tipo
                         <select name="tipo" id="tipo" class="form-control" v-model="model.pokemon.tipo">
+                            <option value="Acero">Acero</option>
+                            <option value="Agua">Agua</option>
+                            <option value="Bicho">Bicho</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Electrico">Electrico</option>
+                            <option value="Fantasma">Fantasma</option>
+                            <option value="Fuego">Fuego</option>
+                            <option value="Hada">Hada</option>
+                            <option value="Hielo">Hielo</option>
                             <option value="Normal">Normal</option>
                             <option value="Lucha">Lucha</option>
-                            <option value="Volador">Volador</option>
-                            <option value="Veneno">Veneno</option>
-                            <option value="Tierra">Tierra</option>
-                            <option value="Roca">Roca</option>
-                            <option value="Fuego">Fuego</option>
-                            <option value="Agua">Agua</option>
                             <option value="Planta">Planta</option>
-                            <option value="Electrico">Electrico</option>
+                            <option value="Psiquico">Psiquico</option>
+                            <option value="Roca">Roca</option>
+                            <option value="Siniestro">Siniestro</option>
+                            <option value="Tierra">Tierra</option>
+                            <option value="Veneno">Veneno</option>
+                            <option value="Volador">Volador</option>
                         </select>
                         <ErrorMessage name="tipo" class="errorValidacion"/>
                     </div>

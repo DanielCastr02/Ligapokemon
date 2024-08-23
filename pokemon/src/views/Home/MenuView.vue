@@ -38,7 +38,7 @@
                     <form>
                         <div class="form-group">
                             <label for="pokemonId">ID</label>
-                            <select id="pokemonId" class="form-control" v-model="selectedPokemonId" @change="loadPokemonDetails">
+                            <select id="pokemonId" class="form-control"  v-model="selectedPokemonId" @change="loadPokemonDetails">
                                 <option v-for="pokemon in pokemones" :key="pokemon.id" :value="pokemon.id">{{ pokemon.id }}</option>
                             </select>
                         </div>
@@ -112,10 +112,9 @@
         methods: {
             checked(){
                 this.createRegistro();
-                alert('Datos Guardados con exito!');
+                this.clear();
             },
             createRegistro(){
-            try {
                 apiclient.registros.createRegistro(this.model.registro).then(res =>{
                     console.log(this.model);
                     if(res.data.affectedRows == 1){
@@ -124,11 +123,10 @@
                             idpokemon: '',
                         }
                     }
+                    alert('Datos Guardados con exito!');
+                }).catch(error => {
+                    alert('Error, debe llenar el formulario.', error);
                 });
-                
-                } catch (error) {
-                    console.error(error)
-                }
             },
             getTrainers() {
                 apiclient.trainers.getTrainers().then(res => {
@@ -189,17 +187,48 @@
                 }
             },
             validarPokemon(trainer_id) {
-                // Filtrar registros por trainer_id
                 const trainerRegistros = this.registros.filter(registro => registro.idtrainer === trainer_id);
+                const removerPokemones = trainerRegistros.map(registro => registro.idpokemon);
+                this.pokemones = this.pokemones.filter(pokemon => !removerPokemones.includes(pokemon.id));
 
-                // Obtener los IDs de los pokemones del entrenador
-                const pokemonIdsToRemove = trainerRegistros.map(registro => registro.idpokemon);
-
-                // Filtrar la lista de pokemones para eliminar los que coincidan
-                this.pokemones = this.pokemones.filter(pokemon => !pokemonIdsToRemove.includes(pokemon.id));
+                //validar si no existe el id seleccionado en la lista para borrar
+                if (!this.pokemones.some(pokemon => pokemon.id === this.selectedPokemonId)) {
+                    this.resetPokemon();
+                }
+            },
+            resetPokemon() {
+                this.model.pokemon = {
+                    selectedPokemonId: '',
+                    nombre: '',
+                    tipo: '',
+                    apodo: '',
+                    sexo: '',
+                }
+                this.selectedPokemonId = '';
+                this.model.registro.idpokemon = '';
+            },
+            clear(){
+                this.model.trainer = {
+                    id: '',
+                    sexo: '',
+                    nombre: '',
+                    edad: '',
+                    dob: '',
+                }
+                this.model.pokemon = {
+                    id: '',
+                    nombre: '',
+                    tipo: '',
+                    apodo: '',
+                    sexo: '',
+                }
+                    this.selectedTrainerId = '';
+                    this.selectedPokemonId = '';
+                    this.model.registro.idtrainer = '';
+                    this.model.registro.idpokemon = '';
             }
         }
-    };
+    }
 </script>
 
 <style scoped>

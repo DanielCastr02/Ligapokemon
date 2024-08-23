@@ -15,7 +15,7 @@
                 <div  class="col-md-6">
                     <div class="form-group">
                             <label for="trainerId">Trainer ID</label>
-                            <select id="trainerId" class="form-control" v-model="selectedTrainerId" @change="loadTrainerDetails">
+                            <select id="trainerId" class="form-control" v-model="model.trainer.id" @change="loadTrainerDetails">
                                 <option v-for="trainer in trainers" :key="trainer.id" :value="trainer.id">{{ trainer.id }}</option>
                             </select>
                         </div>
@@ -27,7 +27,7 @@
                 <div  class="col-md-6">
                     <div class="form-group">
                             <label for="pokemonId">Pokemon ID</label>
-                            <select id="pokemonId" class="form-control" v-model="selectedPokemonId" @change="loadPokemonDetails">
+                            <select id="pokemonId" class="form-control" v-model="model.pokemon.id" @change="loadPokemonDetails" >
                                 <option v-for="pokemon in pokemones" :key="pokemon.id" :value="pokemon.id">{{ pokemon.id }}</option>
                             </select>
                         </div>
@@ -111,9 +111,9 @@ import apiclient from '../../apiclient.js'
                 });
             },
             loadTrainerDetails() {
-                if (this.selectedTrainerId) {
-                    this.getTrainer(this.selectedTrainerId);
-                    this.model.registro.idtrainer = this.selectedTrainerId;
+                if (this.model.trainer.id) {
+                    this.getTrainer(this.model.trainer.id);
+                    this.model.registro.idtrainer = this.model.trainer.id;
                 }
             },
             getTrainer(id) {
@@ -124,9 +124,9 @@ import apiclient from '../../apiclient.js'
                 });
             },
             loadPokemonDetails() {
-                if (this.selectedPokemonId) {
-                    this.getPokemon(this.selectedPokemonId);
-                    this.model.registro.idpokemon = this.selectedPokemonId;
+                if (this.model.pokemon.id) {
+                    this.getPokemon(this.model.pokemon.id);
+                    this.model.registro.idpokemon = this.model.pokemon.id;
                 }
             },
             getPokemon(id) {

@@ -18,6 +18,7 @@
                         <th>idTrainer</th>
                         <th>idPokemon</th>
                         <th>estado</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody v-if="registros.length > 0">
@@ -95,9 +96,7 @@
             },
             cambiarEstado(id) {
                 apiclient.registros.getRegistroById(id).then(res => {
-                    this.model.registro = res.data.registro[0];
-                    console.log("Modelo antes del update:", this.model.registro);
-                    
+                    this.model.registro = res.data.registro[0];                    
                     this.model.registro.estado = this.model.registro.estado === 0 ? 1 : 0;
 
                     apiclient.registros.updateRegistro(this.model.registro).then(res => {
@@ -108,15 +107,15 @@
                                 idpokemon: '',
                                 estado: '',
                             };
-                            this.getRegistros();  // Recargar la lista de registros
                         }
+                        this.getRegistros();
                     }).catch(error => {
                         console.error("Error durante el update:", error);
                     });
                 }).catch(error => {
                     console.error("Error en getRegistroById:", error);
                 });
-            }
+            },
         }
     };
 </script>

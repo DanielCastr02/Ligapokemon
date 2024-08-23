@@ -3,6 +3,26 @@
         <div class="card">
             <div class="card-header">
                 <h4>
+                     Filtrar:
+                </h4>
+            </div>
+            <div class="m-3 d-inline-flex">
+                Sexo:
+                <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="filtroSexo">
+                    <option value="2" :key="2">None</option>
+                    <option value="0" :key="0">Chico</option>
+                    <option value="1" :key="1">Chica</option>
+                </select>
+                Nombre:
+                <input name="nombre" id="nombre" type="text" class="form-control" />
+                DOB:
+                    <input name="fecha1" id="fecha1" type="date" class="form-control" />
+                    <input name="fecha2" id="fecha2" type="date" class="form-control" />
+                Edad:
+                <input name="edad" id="edad" type="text" class="form-control" />
+            </div>
+            <div class="card-header">
+                <h4>
                      Trainers
                     <RouterLink to="/trainer/create" class="btn btn-primary float-end btn-custom">
                         Agregar
@@ -10,7 +30,7 @@
                 </h4>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body">     
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                     <tr>
@@ -20,6 +40,7 @@
                         <th>Edad</th>
                         <th>DOB</th>
                         <th>estado</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody v-if="trainers.length > 0">
@@ -73,6 +94,7 @@
         data() {
             return {
                 trainers: [],
+                selectedTrainerSexo: '',  
                 model:{
                     trainer:{
                         id: '',
@@ -80,6 +102,12 @@
                         nombre:'',
                         edad:'',
                         dob: '',
+                        estado: '',
+                    },
+                    registro:{
+                        id: '',
+                        idtrainer:'',
+                        idpokemon:'',
                         estado: '',
                     }
                 }
@@ -98,6 +126,16 @@
                 apiclient.trainers.deleteTrainer(idTrainerDelete).then(res => {
                     console.log(res);
                     this.getTrainers();
+                }).catch(error => {
+                    if(confirm("Este trainer ya esta registrado a un pokemon, desea eliminar el registro?", error)){
+                        apiclient.registros.deleteRegistrosByTrainerId(idTrainerDelete).then(res => {
+                            console.log(res);
+                            alert('Registros Eliminados...')
+                            this.borrarTrainer(idTrainerDelete);
+                            this.getTrainers();
+                        });
+                    }
+
                 });
             },
             cambiarEstado(id) {
@@ -105,7 +143,7 @@
                     this.model.trainer = res.data.trainer[0];
                     
                     this.model.trainer.estado = this.model.trainer.estado === 0 ? 1 : 0;
-                    this.model.trainer.dob = this.model.trainer.dob.Date;
+                    this.model.trainer.dob = this.model.trainer.dob.slice(0,10);
 
                     apiclient.trainers.updateTrainer(this.model.trainer).then(res => {
                         if (res.data.affectedRows === 1) {
@@ -117,15 +155,46 @@
                                 dob: '',
                                 estado: '',
                             };
-                            this.getTrainers(); 
                         }
+                        if (this.model.trainer.estado === 0) {
+                                this.cambiarEstadoRegistro(id);
+                            }
+                        this.getTrainers();
                     }).catch(error => {
                         console.error("Error durante el update:", error);
                     });
                 }).catch(error => {
                     console.error("Error en getRegistroById:", error);
                 });
+                this.$router.push('/trainers');
+            },
+            cambiarEstadoRegistro(idTrainer) {
+            apiclient.registros.getRegistrosByTrainerId(idTrainer).then(res => {
+                const registros = res.data.registro;
+                
+                registros.forEach(registro => {
+                    registro.estado = 0; 
+                    apiclient.registros.updateRegistro(registro).then(res => {
+                        if (res.data.affectedRows === 1) {
+                            console.log(`Estado del registro ${registro.id} actualizado a 0`);
+                        }
+                    }).catch(error => {
+                        console.error(`Error actualizando el estado del registro ${registro.id}:`, error);
+                    });
+                });
+            }).catch(error => {
+                console.error("Error al obtener registros del trainer:", error);
+            });
+        },
+        filtroSexo(){
+            if(this.selectedTrainerSexo != 2){
+                apiclient.trainers.getTrainersByGender(this.selectedTrainerSexo).then(res => {
+                    this.trainers = res.data.trainer;
+                });
             }
+        },
+
+
         }
     };
 </script>

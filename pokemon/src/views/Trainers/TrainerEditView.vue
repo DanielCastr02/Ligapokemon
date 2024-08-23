@@ -85,7 +85,8 @@ import apiclient from '../../apiclient.js'
                     this.model.trainer.sexo = trainerData.sexo;
                     this.model.trainer.nombre = trainerData.nombre;
                     this.model.trainer.edad = trainerData.edad;
-                    this.model.trainer.dob = trainerData.dob.Date;
+                    this.model.trainer.dob = trainerData.dob.slice(0,10);
+                    this.model.trainer.estado = trainerData.estado;
                 });
             },
             checked(){
@@ -102,6 +103,7 @@ import apiclient from '../../apiclient.js'
                             nombre:'',
                             edad:'',
                             dob: '',
+                            estado: ''
                         }
                         this.mensaje = 1;
                     }
