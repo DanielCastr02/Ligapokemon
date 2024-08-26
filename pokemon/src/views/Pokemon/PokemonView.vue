@@ -2,6 +2,58 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
+                <h4>Filtrar Pokemones</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Filtro por Nombre -->
+                    <div class="col-md-2">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input name="nombre" id="nombre" type="text" class="form-control" @input="filtroNombre" placeholder="Buscar por nombre" />
+                    </div>
+                    <!-- Filtro por tipo -->
+                    <div class="col-md-2">
+                        <label for="sexo" class="form-label">Tipo:</label>
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonTipo" @change="filtroTipo">
+                            <option value="Acero" :key="'None'" >None</option>
+                            <option value="Acero" :key="'Acero'" >Acero</option>
+                            <option value="Agua" :key="'Agua'" >Agua</option>
+                            <option value="Bicho" :key="'Bicho'" >Bicho</option>
+                            <option value="Dragon" :key="'Dragon'" >Dragon</option>
+                            <option value="Electrico" :key="'Electrico'" >Electrico</option>
+                            <option value="Fantasma" :key="'Fantasma'" >Fantasma</option>
+                            <option value="Fuego" :key="'Fuego'" >Fuego</option>
+                            <option value="Hada" :key="'Hada'" >Hada</option>
+                            <option value="Hielo" :key="'Hielo'" >Hielo</option>
+                            <option value="Normal" :key="'Normal'" >Normal</option>
+                            <option value="Lucha" :key="'Lucha'" >Lucha</option>
+                            <option value="Planta" :key="'Planta'" >Planta</option>
+                            <option value="Psiquico" :key="'Psiquico'" >Psiquico</option>
+                            <option value="Roca" :key="'Roca'" >Roca</option>
+                            <option value="Siniestro" :key="'Siniestro'" >Siniestro</option>
+                            <option value="Tierra" :key="'Tierra'" >Tierra</option>
+                            <option value="Veneno" :key="'Veneno'" >Veneno</option>
+                            <option value="Volador" :key="'Volador'" >Volador</option>
+                        </select>
+                    </div>
+                    <!-- Filtro por apodo -->
+                    <div class="col-md-2">
+                        <label for="apodo" class="form-label">Apodo:</label>
+                        <input name="apodo" id="apodo" type="text" class="form-control" @input="filtroApodo" placeholder="Buscar por apodo" />
+                    </div>
+
+                    <!-- Filtro por Sexo -->
+                    <div class="col-md-2">
+                        <label for="sexo" class="form-label">Sexo:</label>
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonSexo" @change="filtroSexo">
+                            <option value="2" :key="2">None</option>
+                            <option value="0" :key="0">Chico</option>
+                            <option value="1" :key="1">Chica</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-header">
                 <h4>
                      Pokemones
                     <RouterLink to="/pokemones/create" class="btn btn-primary float-end btn-custom">
@@ -61,6 +113,8 @@
         },
         data() {
             return {
+                selectedPokemonSexo: '',
+                selectedPokemonTipo: '',
                 pokemones: [],
             };
         },
@@ -88,6 +142,57 @@
                     }
 
                 });
+            },
+            //FILTROS
+            filtroNombre(event) {
+                const nombre = event.target.value.trim();
+                if (nombre.length > 0) {
+                    apiclient.pokemones.getPokemonesByName(nombre).then(res => {
+                        this.pokemones = res.data.pokemon;
+                    }).catch(error => {
+                        if (error.response && error.response.status === 404) {
+                            this.pokemones = []; 
+                        } else {
+                            console.error('Error al obtener el pokemones:', error);
+                        }
+                    });
+                } else {
+                    this.getPokemones();
+                }
+            },
+            filtroTipo(){
+                if(this.selectedPokemonTipo == 'None'){
+                    apiclient.pokemones.getPokemonesByType(this.selectedPokemonTipo).then(res => {
+                        this.pokemones = res.data.pokemon;
+                    });
+                }else{
+                    this.getPokemones();
+                }
+            },
+            filtroApodo(event) {
+                const apodo = event.target.value.trim();
+                if (apodo.length > 0) {
+                    apiclient.pokemones.getPokemonesByApodo(apodo).then(res => {
+                        this.pokemones = res.data.pokemon;
+                    }).catch(error => {
+                        if (error.response && error.response.status === 404) {
+                            this.pokemones = []; 
+                        } else {
+                            console.error('Error al obtener el pokemones:', error);
+                        }
+                    });
+                } else {
+                    this.getPokemones();
+                }
+            },
+            filtroSexo(){
+                if(this.selectedPokemonSexo != 2){
+                    apiclient.pokemones.getPokemonesByGender(this.selectedPokemonSexo).then(res => {
+                        this.pokemones = res.data.pokemon;
+                    });
+                }else{
+                    this.getPokemones();
+                }
             },
         }
     };

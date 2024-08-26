@@ -109,12 +109,12 @@ import apiclient from '../../apiclient.js'
                 this.model.trainer.edad = age;
             },
             validateInput(event) {
-            const char = String.fromCharCode(event.keyCode);
-            const regex = /^[A-Za-z\s]+$/;
-            if (!regex.test(char)) {
-                event.preventDefault();
-            }
-        }
+                const char = String.fromCharCode(event.keyCode);
+                const regex = /^[A-Za-z\s]+$/;
+                if (!regex.test(char)) {
+                    event.preventDefault();
+                }
+            },
     }
 }
 </script>

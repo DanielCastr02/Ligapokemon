@@ -2,24 +2,49 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                <h4>
-                     Filtrar:
-                </h4>
+                <h4>Filtrar Entrenadores</h4>
             </div>
-            <div class="m-3 d-inline-flex">
-                Sexo:
-                <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="filtroSexo">
-                    <option value="2" :key="2">None</option>
-                    <option value="0" :key="0">Chico</option>
-                    <option value="1" :key="1">Chica</option>
-                </select>
-                Nombre:
-                <input name="nombre" id="nombre" type="text" class="form-control" />
-                DOB:
-                    <input name="fecha1" id="fecha1" type="date" class="form-control" />
-                    <input name="fecha2" id="fecha2" type="date" class="form-control" />
-                Edad:
-                <input name="edad" id="edad" type="text" class="form-control" />
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Filtro por Sexo -->
+                    <div class="col-md-2">
+                        <label for="sexo" class="form-label">Sexo:</label>
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="filtroSexo">
+                            <option value="2" :key="2">None</option>
+                            <option value="0" :key="0">Chico</option>
+                            <option value="1" :key="1">Chica</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Nombre -->
+                    <div class="col-md-2">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input name="nombre" id="nombre" type="text" class="form-control" 
+                        @input="filtroNombre" 
+                        @keypress="validateInputNombre"
+                        placeholder="Buscar por nombre" />
+                    </div>
+
+                    <!-- Filtro por Fechas de Nacimiento -->
+                    <div class="col-md-3">
+                        <label for="fecha1" class="form-label">Fecha de Nacimiento Desde:</label>
+                        <input name="fecha1" id="fecha1" type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="fecha2" class="form-label">Fecha de Nacimiento Hasta:</label>
+                        <input name="fecha2" id="fecha2" type="date" class="form-control" />
+                    </div>
+
+                    <!-- Filtro por Edad -->
+                    <div class="col-md-2">
+                        <label for="edad" class="form-label">Edad:</label>
+                        <input name="edad" id="edad" type="number" class="form-control" 
+                        @input="filtroEdad"
+                        @keypress="validateInputEdad" 
+                        placeholder="Edad del entrenador" />
+                    </div>
+                </div>
             </div>
             <div class="card-header">
                 <h4>
@@ -186,13 +211,66 @@
                 console.error("Error al obtener registros del trainer:", error);
             });
         },
+        //KEYPRESS
+        validateInputNombre(event) {
+            const char = String.fromCharCode(event.keyCode);
+            const regex = /^[A-Za-z\s]+$/;
+            if (!regex.test(char)) {
+                event.preventDefault();
+            }
+        },
+        validateInputEdad(event) {
+            const char = String.fromCharCode(event.keyCode);
+            const regex = /^[0-9,$]*$/;
+            if (!regex.test(char)) {
+                event.preventDefault();
+            }
+        },
+        //FILTROS
         filtroSexo(){
             if(this.selectedTrainerSexo != 2){
                 apiclient.trainers.getTrainersByGender(this.selectedTrainerSexo).then(res => {
                     this.trainers = res.data.trainer;
                 });
+            }else{
+                this.getTrainers();
             }
         },
+        filtroNombre(event) {
+            const nombre = event.target.value.trim();
+            if (nombre.length > 0) {
+                apiclient.trainers.getTrainerByName(nombre).then(res => {
+                    this.trainers = res.data.trainer;
+                }).catch(error => {
+                    if (error.response && error.response.status === 404) {
+                        this.trainers = []; 
+                    } else {
+                        console.error('Error al obtener el entrenador:', error);
+                    }
+                });
+            } else {
+                this.getTrainers();
+            }
+        },
+        filtroEdad(event) {
+            const edad = event.target.value.trim();
+            if (edad.length > 0) {
+                apiclient.trainers.getTrainerByAge(edad).then(res => {
+                    this.trainers = res.data.trainer;
+                }).catch(error => {
+                    if (error.response && error.response.status === 404) {
+                        this.trainers = []; 
+                    } else {
+                        console.error('Error al obtener el entrenador:', error);
+                    }
+                });
+            } else {
+                this.getTrainers();
+            }
+        },
+
+
+
 
 
         }

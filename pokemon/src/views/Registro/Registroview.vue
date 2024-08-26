@@ -2,6 +2,23 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
+                <h4>Filtrar Registros</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Filtro por idtrainer -->
+                    <div class="col-md-2">
+                        <label for="idtrainer" class="form-label">idtrainer:</label>
+                        <input name="idtrainer" id="idtrainer" type="number" class="form-control" />
+                    </div>
+                    <!-- Filtro por idpokemon -->
+                    <div class="col-md-2">
+                        <label for="idpokemon" class="form-label">idpokemon:</label>
+                        <input name="idpokemon" id="idpokemon" type="number" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-header">
                 <h4>
                      Registros
                     <RouterLink to="/" class="btn btn-primary float-end btn-custom">
