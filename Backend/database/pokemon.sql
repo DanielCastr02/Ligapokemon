@@ -93,3 +93,76 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+--FILTROS
+CREATE FUNCTION getPokemonesByName(pokemon_nombre VARCHAR)
+RETURNS TABLE(
+    id INT,
+    nombre VARCHAR,
+    tipo VARCHAR,
+    apodo VARCHAR,
+    sexo INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
+    FROM pokemon WHERE pokemon.nombre like '%' || pokemon_nombre || '%'
+    ORDER BY pokemon.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION getPokemonesByType(pokemon_tipo VARCHAR)
+RETURNS TABLE(
+    id INT,
+    nombre VARCHAR,
+    tipo VARCHAR,
+    apodo VARCHAR,
+    sexo INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
+    FROM pokemon WHERE pokemon.tipo = pokemon_tipo
+    ORDER BY pokemon.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION getPokemonesByApodo(pokemon_apodo VARCHAR)
+RETURNS TABLE(
+    id INT,
+    nombre VARCHAR,
+    tipo VARCHAR,
+    apodo VARCHAR,
+    sexo INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
+    FROM pokemon WHERE pokemon.apodo like '%' || pokemon_apodo || '%'
+    ORDER BY pokemon.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION getPokemonesByGender(pokemon_sexo INT)
+RETURNS TABLE(
+    id INT,
+    nombre VARCHAR,
+    tipo VARCHAR,
+    apodo VARCHAR,
+    sexo INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
+    FROM pokemon WHERE pokemon.sexo = pokemon_sexo
+    ORDER BY pokemon.id ASC;
+END;
+$$
+LANGUAGE plpgsql;

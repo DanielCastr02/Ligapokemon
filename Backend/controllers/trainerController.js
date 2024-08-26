@@ -87,7 +87,7 @@ export const getTrainerDetalle = (req, res) => {
                 res.status(404).json({ message: 'Trainer details not found' });
             } else {
                 console.log('Fetching trainer details...');
-                res.status(200).json({ message: 'Trainer details fetched successfully', registro: results.rows });
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
             }
         }
     );
@@ -106,9 +106,49 @@ export const getTrainersByGender = (req, res) => {
                 res.status(404).json({ message: 'Trainer details not found' });
             } else {
                 console.log('Fetching trainer details...');
-                res.status(200).json({ message: 'Trainer details fetched successfully', registro: results.rows });
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
             }
         }
     );
 };
+
+export const getTrainerByName = (req, res) => {
+    const nombre = req.params.nombre;
+    pool.query(
+        'SELECT * FROM getTrainerByName($1);',
+        [nombre],
+        (error, results) => {
+            if (error) {
+                console.error('Error getting trainer details:', error);
+                res.status(500).send('Error getting trainer details');
+            } else if (results.rows.length === 0) {
+                res.status(404).json({ message: 'Trainer details not found' });
+            } else {
+                console.log('Fetching trainer details...');
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
+            }
+        }
+    );
+};
+
+
+export const getTrainerByAge = (req, res) => {
+    const edad = req.params.edad;
+    pool.query(
+        'SELECT * FROM getTrainerByAge($1);',
+        [edad],
+        (error, results) => {
+            if (error) {
+                console.error('Error getting trainer details:', error);
+                res.status(500).send('Error getting trainer details');
+            } else if (results.rows.length === 0) {
+                res.status(404).json({ message: 'Trainer details not found' });
+            } else {
+                console.log('Fetching trainer details...');
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
+            }
+        }
+    );
+};
+
 

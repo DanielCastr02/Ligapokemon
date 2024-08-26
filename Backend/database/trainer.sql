@@ -149,7 +149,48 @@ AS $$
 BEGIN
     RETURN QUERY 
     SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
-    FROM trainer WHERE trainer.sexo = trainer_sexo;
+    FROM trainer WHERE trainer.sexo = trainer_sexo
+    ORDER BY trainer.id ASC;
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE FUNCTION getTrainerByName(trainer_nombre VARCHAR)
+RETURNS TABLE(
+    id INT,
+    sexo INT,
+    nombre VARCHAR,
+    edad INT,
+    dob DATE,
+    estado INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
+    FROM trainer WHERE trainer.nombre like '%' || trainer_nombre || '%'
+    ORDER BY trainer.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION getTrainerByAge(trainer_edad INT)
+RETURNS TABLE(
+    id INT,
+    sexo INT,
+    nombre VARCHAR,
+    edad INT,
+    dob DATE,
+    estado INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
+    FROM trainer WHERE trainer.edad = trainer_edad
+    ORDER BY trainer.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
+
+

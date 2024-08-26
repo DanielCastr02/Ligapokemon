@@ -157,3 +157,36 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+--Filtros
+CREATE FUNCTION getRegistrosBytrainerid(registro_idtrainer INT)
+RETURNS TABLE(
+    id INT,
+    idtrainer INT,
+    idpokemon INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT registro.id, registro.idtrainer, registro.idpokemon
+    FROM registro WHERE trainer.idtrainer = registro_idtrainer
+    ORDER BY registro.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION getRegistrosBypokemonid(registro_idpokemon INT)
+RETURNS TABLE(
+    id INT,
+    idtrainer INT,
+    idpokemon INT
+)
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT registro.id, registro.idtrainer, registro.idpokemon
+    FROM registro WHERE trainer.idpokemon = registro_idpokemon
+    ORDER BY registro.id ASC;
+END;
+$$
+LANGUAGE plpgsql;
