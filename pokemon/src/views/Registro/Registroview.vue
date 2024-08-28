@@ -32,11 +32,14 @@
                     <RouterLink to="/" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
+                    <button class="btn btn-secondary float-end" @click="crearPDF">
+                        Exportar PDF
+                    </button>
                 </h4>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped" id="registrosTable">
                 <thead class="thead-dark">
                     <tr>
                         <th>id</th>
@@ -83,6 +86,8 @@
 </template>
 
 <script>
+    import jsPDF from 'jspdf'
+    import 'jspdf-autotable'
     import { RouterLink } from 'vue-router';
     import apiclient from '../../apiclient.js';
     
@@ -167,6 +172,23 @@
                         this.registros = [];
                     });
             },
+            crearPDF() {
+                const doc = new jsPDF();
+                doc.text('Lista de Registros', 10, 10);
+                doc.autoTable({
+                    html: '#registrosTable', 
+                    columns: [
+                        { header: 'Id', dataKey: '0' },
+                        { header: 'IdTrainer', dataKey: '1' },
+                        { header: 'IdPokemon', dataKey: '2' },
+                        { header: 'Estado', dataKey: '3' },
+                    ],
+                    columnStyles: {
+                        3: { display: 'none' }, 
+                    },
+                });
+                doc.save('registros.pdf');
+            }
             
         }
     };

@@ -50,14 +50,17 @@
             <div class="card-header">
                 <h4>
                      Trainers
-                    <RouterLink to="/trainer/create" class="btn btn-primary float-end btn-custom">
+                     <RouterLink to="/trainer/create" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
+                     <button class="btn btn-secondary float-end" @click="crearPDF">
+                        Exportar PDF
+                    </button>
                 </h4>
             </div>
         </div>
         <div class="card-body">     
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped" id="trainersTable" >
                 <thead class="thead-dark">
                     <tr>
                         <th>Id</th>
@@ -109,6 +112,8 @@
 </template>
 
 <script>
+    import jsPDF from 'jspdf'
+    import 'jspdf-autotable'
     import { RouterLink } from 'vue-router';
     import apiclient from '../../apiclient.js';
     
@@ -213,46 +218,65 @@
             }).catch(error => {
                 console.error("Error al obtener registros del trainer:", error);
             });
-        },
-        //KEYPRESS
-        validateInputNombre(event) {
-            const char = String.fromCharCode(event.keyCode);
-            const regex = /^[A-Za-z\s]+$/;
-            if (!regex.test(char)) {
-                event.preventDefault();
-            }
-        },
-        validateInputEdad(event) {
-            const char = String.fromCharCode(event.keyCode);
-            const regex = /^[0-9,$]*$/;
-            if (!regex.test(char)) {
-                event.preventDefault();
-            }
-        },
-        filtrar() {
-            const filtros = {
-                sexo: this.selectedTrainerSexo === '2' ? null : this.selectedTrainerSexo,
-                nombre: this.$refs.nombreInput.value.trim() || null, 
-                edad: this.$refs.edadInput.value.trim() || null, 
-                dobInicio: this.selectedTrainerDobInicio || null,
-                dobFin: this.selectedTrainerDobFin || null
-            };
-            
-            apiclient.trainers.getTrainersFiltro(
-                filtros.sexo,
-                filtros.nombre,
-                filtros.edad,
-                filtros.dobInicio,
-                filtros.dobFin
-            )
-                .then(res => {
-                    this.trainers = res.data.trainer;
-                })
-                .catch(error => {
-                    console.error('Error al filtrar entrenadores:', error);
-                    this.trainers = [];
-                });
-        }
+            },
+            //KEYPRESS
+            validateInputNombre(event) {
+                const char = String.fromCharCode(event.keyCode);
+                const regex = /^[A-Za-z\s]+$/;
+                if (!regex.test(char)) {
+                    event.preventDefault();
+                }
+            },
+            validateInputEdad(event) {
+                const char = String.fromCharCode(event.keyCode);
+                const regex = /^[0-9,$]*$/;
+                if (!regex.test(char)) {
+                    event.preventDefault();
+                }
+            },
+            filtrar() {
+                const filtros = {
+                    sexo: this.selectedTrainerSexo === '2' ? null : this.selectedTrainerSexo,
+                    nombre: this.$refs.nombreInput.value.trim() || null, 
+                    edad: this.$refs.edadInput.value.trim() || null, 
+                    dobInicio: this.selectedTrainerDobInicio || null,
+                    dobFin: this.selectedTrainerDobFin || null
+                };
+                
+                apiclient.trainers.getTrainersFiltro(
+                    filtros.sexo,
+                    filtros.nombre,
+                    filtros.edad,
+                    filtros.dobInicio,
+                    filtros.dobFin
+                )
+                    .then(res => {
+                        this.trainers = res.data.trainer;
+                    })
+                    .catch(error => {
+                        console.error('Error al filtrar entrenadores:', error);
+                        this.trainers = [];
+                    });
+            },
+            crearPDF() {
+            const doc = new jsPDF();
+            doc.text('Lista de Entrenadores', 10, 10);
+            doc.autoTable({
+                html: '#trainersTable', 
+                columns: [
+                    { header: 'Id', dataKey: '0' },
+                    { header: 'Sexo', dataKey: '1' },
+                    { header: 'Nombre', dataKey: '2' },
+                    { header: 'Edad', dataKey: '3' },
+                    { header: 'DOB', dataKey: '4' },
+                    { header: 'estado', dataKey: '5' },
+                ],
+                columnStyles: {
+                    5: { display: 'none' }, 
+                },
+            });
+            doc.save('trainers.pdf');
+    }
 
 
     }

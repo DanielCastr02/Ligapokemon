@@ -67,11 +67,14 @@
                     <RouterLink to="/pokemones/create" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
+                    <button class="btn btn-secondary float-end" @click="crearPDF">
+                        Exportar PDF
+                    </button>
                 </h4>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped" id="pokemonesTable">
                 <thead class="thead-dark">
                     <tr>
                         <th>id</th>
@@ -111,6 +114,8 @@
 </template>
 
 <script>
+    import jsPDF from 'jspdf'
+    import 'jspdf-autotable'
     import { RouterLink } from 'vue-router';
     import apiclient from '../../apiclient.js';
     
@@ -182,6 +187,24 @@
                         this.pokemones = [];
                     });
             },
+            crearPDF() {
+                const doc = new jsPDF();
+                doc.text('Lista de Pokemones', 10, 10);
+                doc.autoTable({
+                    html: '#pokemonesTable', 
+                    columns: [
+                        { header: 'Id', dataKey: '0' },
+                        { header: 'Nombre', dataKey: '1' },
+                        { header: 'Tipo', dataKey: '2' },
+                        { header: 'Apodo', dataKey: '3' },
+                        { header: 'sexo', dataKey: '4' },
+                    ],
+                    columnStyles: {
+                        4: { display: 'none' }, 
+                    },
+                });
+                doc.save('pokemones.pdf');
+            }
         }
     };
 </script>
