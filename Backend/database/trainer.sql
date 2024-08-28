@@ -43,8 +43,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-
-
 --Get trainer by id
 CREATE FUNCTION getTrainerById(trainer_id INT)
 RETURNS TABLE(
@@ -135,8 +133,14 @@ END;
 $$
 LANGUAGE plpgsql;
 
---FILTROS
-CREATE FUNCTION getTrainersByGender(trainer_sexo INT)
+--filtro dinamico:
+CREATE FUNCTION getTrainersFiltro(
+    trainer_sexo INT DEFAULT NULL,
+    trainer_nombre VARCHAR DEFAULT NULL,
+    trainer_edad INT DEFAULT NULL,
+    trainer_dobInicio DATE DEFAULT NULL,
+    trainer_dobFin DATE DEFAULT NULL
+)
 RETURNS TABLE(
     id INT,
     sexo INT,
@@ -147,50 +151,14 @@ RETURNS TABLE(
 )
 AS $$
 BEGIN
-    RETURN QUERY 
-    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
-    FROM trainer WHERE trainer.sexo = trainer_sexo
+    RETURN QUERY
+    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado
+    FROM trainer
+    WHERE (trainer_sexo IS NULL OR trainer.sexo = trainer_sexo)
+      AND (trainer_nombre IS NULL OR trainer.nombre ILIKE '%' || trainer_nombre || '%')
+      AND (trainer_edad IS NULL OR trainer.edad = trainer_edad)
+      AND (trainer_dobInicio IS NULL OR trainer.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
     ORDER BY trainer.id ASC;
 END;
 $$
 LANGUAGE plpgsql;
-
-CREATE FUNCTION getTrainerByName(trainer_nombre VARCHAR)
-RETURNS TABLE(
-    id INT,
-    sexo INT,
-    nombre VARCHAR,
-    edad INT,
-    dob DATE,
-    estado INT
-)
-AS $$
-BEGIN
-    RETURN QUERY 
-    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
-    FROM trainer WHERE trainer.nombre like '%' || trainer_nombre || '%'
-    ORDER BY trainer.id ASC;
-END;
-$$
-LANGUAGE plpgsql;
-
-CREATE FUNCTION getTrainerByAge(trainer_edad INT)
-RETURNS TABLE(
-    id INT,
-    sexo INT,
-    nombre VARCHAR,
-    edad INT,
-    dob DATE,
-    estado INT
-)
-AS $$
-BEGIN
-    RETURN QUERY 
-    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
-    FROM trainer WHERE trainer.edad = trainer_edad
-    ORDER BY trainer.id ASC;
-END;
-$$
-LANGUAGE plpgsql;
-
-

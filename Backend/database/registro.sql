@@ -36,8 +36,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-
-
 --Get registro by id
 CREATE FUNCTION getRegistroById(registro_id INT)
 RETURNS TABLE(
@@ -158,34 +156,24 @@ END;
 $$
 LANGUAGE plpgsql;
 
---Filtros
-CREATE FUNCTION getRegistrosBytrainerid(registro_idtrainer INT)
+--Filtro dinamico
+CREATE FUNCTION getRegistrosFiltro(
+    registro_idtrainer INT DEFAULT NULL,
+    registro_idpokemon INT DEFAULT NULL
+)
 RETURNS TABLE(
     id INT,
     idtrainer INT,
-    idpokemon INT
+    idpokemon INT,
+    estado INT
 )
 AS $$
 BEGIN
-    RETURN QUERY 
-    SELECT registro.id, registro.idtrainer, registro.idpokemon
-    FROM registro WHERE trainer.idtrainer = registro_idtrainer
-    ORDER BY registro.id ASC;
-END;
-$$
-LANGUAGE plpgsql;
-
-CREATE FUNCTION getRegistrosBypokemonid(registro_idpokemon INT)
-RETURNS TABLE(
-    id INT,
-    idtrainer INT,
-    idpokemon INT
-)
-AS $$
-BEGIN
-    RETURN QUERY 
-    SELECT registro.id, registro.idtrainer, registro.idpokemon
-    FROM registro WHERE trainer.idpokemon = registro_idpokemon
+    RETURN QUERY
+    SELECT registro.id, registro.idtrainer, registro.idpokemon, registro.estado
+    FROM registro
+    WHERE (registro_idtrainer IS NULL OR registro.idtrainer = registro_idtrainer)
+      AND (registro_idpokemon IS NULL OR registro.idpokemon = registro_idpokemon)
     ORDER BY registro.id ASC;
 END;
 $$

@@ -44,11 +44,11 @@
     </div>
 </template>
 <script>
-import { Field, ErrorMessage } from 'vee-validate';
+import { Field, ErrorMessage, Form } from 'vee-validate';
 import apiclient from '../../apiclient.js'
     export default{
         nombre: 'editarTrainer',
-        components: {Field, ErrorMessage},
+        components: {Field,Form, ErrorMessage},
         data(){
             return{
                 mensaje: 0,

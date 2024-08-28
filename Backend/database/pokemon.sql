@@ -94,8 +94,13 @@ END;
 $$
 LANGUAGE plpgsql;
 
---FILTROS
-CREATE FUNCTION getPokemonesByName(pokemon_nombre VARCHAR)
+--Filtro dinamico:
+CREATE FUNCTION getPokemonesFiltro(
+    pokemon_nombre VARCHAR DEFAULT NULL,
+    pokemon_tipo VARCHAR DEFAULT NULL,
+    pokemon_apodo VARCHAR DEFAULT NULL,
+    pokemon_sexo INT DEFAULT NULL
+)
 RETURNS TABLE(
     id INT,
     nombre VARCHAR,
@@ -105,64 +110,16 @@ RETURNS TABLE(
 )
 AS $$
 BEGIN
-    RETURN QUERY 
+    RETURN QUERY
     SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
-    FROM pokemon WHERE pokemon.nombre like '%' || pokemon_nombre || '%'
+    FROM pokemon
+    WHERE (pokemon_nombre IS NULL OR pokemon.nombre ILIKE '%' || pokemon_nombre || '%')
+      AND (pokemon_tipo IS NULL OR pokemon.tipo = pokemon_tipo)
+      AND (pokemon_apodo IS NULL OR pokemon.apodo ILIKE '%' || pokemon_apodo || '%')
+      AND (pokemon_sexo IS NULL OR pokemon.sexo = pokemon_sexo)
     ORDER BY pokemon.id ASC;
 END;
 $$
 LANGUAGE plpgsql;
 
-CREATE FUNCTION getPokemonesByType(pokemon_tipo VARCHAR)
-RETURNS TABLE(
-    id INT,
-    nombre VARCHAR,
-    tipo VARCHAR,
-    apodo VARCHAR,
-    sexo INT
-)
-AS $$
-BEGIN
-    RETURN QUERY 
-    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
-    FROM pokemon WHERE pokemon.tipo = pokemon_tipo
-    ORDER BY pokemon.id ASC;
-END;
-$$
-LANGUAGE plpgsql;
 
-CREATE FUNCTION getPokemonesByApodo(pokemon_apodo VARCHAR)
-RETURNS TABLE(
-    id INT,
-    nombre VARCHAR,
-    tipo VARCHAR,
-    apodo VARCHAR,
-    sexo INT
-)
-AS $$
-BEGIN
-    RETURN QUERY 
-    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
-    FROM pokemon WHERE pokemon.apodo like '%' || pokemon_apodo || '%'
-    ORDER BY pokemon.id ASC;
-END;
-$$
-LANGUAGE plpgsql;
-
-CREATE FUNCTION getPokemonesByGender(pokemon_sexo INT)
-RETURNS TABLE(
-    id INT,
-    nombre VARCHAR,
-    tipo VARCHAR,
-    apodo VARCHAR,
-    sexo INT
-)
-AS $$
-BEGIN
-    RETURN QUERY 
-    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
-    FROM pokemon WHERE pokemon.sexo = pokemon_sexo
-    ORDER BY pokemon.id ASC;
-END;
-$$
-LANGUAGE plpgsql;

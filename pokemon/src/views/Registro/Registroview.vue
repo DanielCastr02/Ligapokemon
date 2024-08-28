@@ -9,12 +9,20 @@
                     <!-- Filtro por idtrainer -->
                     <div class="col-md-2">
                         <label for="idtrainer" class="form-label">idtrainer:</label>
-                        <input name="idtrainer" id="idtrainer" type="number" class="form-control" />
+                        <input name="idtrainer" id="idtrainer" type="number" class="form-control"
+                        @input="filtrar"
+                        @keypress="validateInput" 
+                        ref="idTrainerInput"
+                         />
                     </div>
                     <!-- Filtro por idpokemon -->
                     <div class="col-md-2">
                         <label for="idpokemon" class="form-label">idpokemon:</label>
-                        <input name="idpokemon" id="idpokemon" type="number" class="form-control" />
+                        <input name="idpokemon" id="idpokemon" type="number" class="form-control" 
+                        @input="filtrar"
+                        @keypress="validateInput"
+                        ref="idPokemonInput"
+                        />
                     </div>
                 </div>
             </div>
@@ -133,6 +141,33 @@
                     console.error("Error en getRegistroById:", error);
                 });
             },
+            validateInput(event) {
+                const char = String.fromCharCode(event.keyCode);
+                const regex = /^[0-9,$]*$/;
+                if (!regex.test(char)) {
+                    event.preventDefault();
+                }
+            },
+            //FILTRO
+            filtrar() {
+                const filtros = {
+                    idtrainer: this.$refs.idTrainerInput.value.trim() || null,
+                    idpokemon: this.$refs.idPokemonInput.value.trim() || null
+                };
+                
+                apiclient.registros.getRegistrosFiltro(
+                    filtros.idtrainer,
+                    filtros.idpokemon
+                )
+                    .then(res => {
+                        this.registros = res.data.registro;
+                    })
+                    .catch(error => {
+                        console.error('Error al filtrar registros:', error);
+                        this.registros = [];
+                    });
+            },
+            
         }
     };
 </script>

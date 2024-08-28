@@ -45,7 +45,7 @@ export const createRegistro = (req, res) => {
 export const updateRegistro = (req, res) => {
     const id = req.params.id;
     const registro = req.body;
-    pool.query('SELECT updateRegistro($1, $2::json)', 
+    pool.query('SELECT updateRegistro($1, $2::json);', 
         [id, registro], 
         (error) => {
         if(error){
@@ -74,7 +74,7 @@ export const deleteRegistro = (req, res) => {
 
 export const getRegistroDetalle = (req, res) => {
     const id = req.params.id;
-    pool.query('SELECT * FROM getRegistroDetalle($1)', [id], (error, results) => {
+    pool.query('SELECT * FROM getRegistroDetalle($1);', [id], (error, results) => {
             if (error) {
                 console.error('Error getting registro:', error);
                 res.status(500).send('Error getting registro');
@@ -89,7 +89,7 @@ export const getRegistroDetalle = (req, res) => {
 }
 export const getRegistrosByTrainerId = (req, res) => {
     const id = req.params.id;
-    pool.query('SELECT * FROM getRegistrosByTrainerId($1)', [id], (error, results) => {
+    pool.query('SELECT * FROM getRegistrosByTrainerId($1);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -102,7 +102,7 @@ export const getRegistrosByTrainerId = (req, res) => {
 
 export const deleteRegistrosByTrainerId = (req, res) => {
     const id = req.params.id;
-    pool.query('SELECT deleteRegistrosByTrainerId($1)', [id], (error, results) => {
+    pool.query('SELECT deleteRegistrosByTrainerId($1);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -114,7 +114,7 @@ export const deleteRegistrosByTrainerId = (req, res) => {
 }
 export const deleteRegistrosByPokemonId = (req, res) => {
     const id = req.params.id;
-    pool.query('SELECT deleteRegistrosByPokemonId($1)', [id], (error, results) => {
+    pool.query('SELECT deleteRegistrosByPokemonId($1);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -124,3 +124,36 @@ export const deleteRegistrosByPokemonId = (req, res) => {
         }
     });
 }
+//filtro
+export const getRegistrosFiltro = (req, res) => {
+    const idtrainer = req.query.idtrainer === undefined ? null: Number(req.query.idtrainer);
+    const idpokemon = req.query.idpokemon === undefined ? null: Number(req.query.idpokemon);
+    console.log({
+        idtrainer: idtrainer,
+        idpokemon: idpokemon
+    })
+
+    const query = `
+        SELECT * FROM getRegistrosFiltro(
+            $1::INT, 
+            $2::INT
+        );
+    `;
+    pool.query(
+        query,
+        [
+            idtrainer,
+            idpokemon
+        ],
+        (error, results) => {
+            if (error) {
+                console.error('Error getting registros details:', error);
+                res.status(500).send('Error getting registro details');
+            } else if (results.rows.length === 0) {
+                res.status(404).json({ message: 'Registro details not found' });
+            } else {
+                res.status(200).json({ message: 'Registro details fetched successfully', registro: results.rows });
+            }
+        }
+    );
+};

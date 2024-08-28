@@ -87,17 +87,45 @@ export const getTrainerDetalle = (req, res) => {
                 res.status(404).json({ message: 'Trainer details not found' });
             } else {
                 console.log('Fetching trainer details...');
-                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
+                res.status(200).json({ message: 'Trainer details fetched successfully', registro: results.rows });
             }
         }
     );
 };
 
-export const getTrainersByGender = (req, res) => {
-    const sexo = req.params.sexo;
+//filtro
+export const getTrainersFiltro = (req, res) => {
+    const sexo = req.query.sexo === undefined ? null: Number(req.query.sexo);
+    const nombre = req.query.nombre === undefined ? null : req.query.nombre;
+    const edad = req.query.edad === undefined ? null: Number(req.query.edad);
+    const dobInicio = req.query.dobInicio === undefined ? null : req.query.dobInicio;
+    const dobFin = req.query.dobFin === undefined ? null : req.query.dobFin;
+    console.log({
+        sexo: sexo,
+        nombre: nombre,
+        edad: edad,
+        dobInicio: dobInicio,
+        dobFin: dobFin
+    })
+
+    const query = `
+        SELECT * FROM getTrainersFiltro(
+            $1::INT, 
+            $2::VARCHAR, 
+            $3::INT, 
+            $4::DATE, 
+            $5::DATE
+        );
+    `;
     pool.query(
-        'SELECT * FROM getTrainersByGender($1);',
-        [sexo],
+        query,
+        [
+            sexo , 
+            nombre ,
+            edad ,  
+            dobInicio , 
+            dobFin 
+        ],
         (error, results) => {
             if (error) {
                 console.error('Error getting trainer details:', error);
@@ -105,50 +133,8 @@ export const getTrainersByGender = (req, res) => {
             } else if (results.rows.length === 0) {
                 res.status(404).json({ message: 'Trainer details not found' });
             } else {
-                console.log('Fetching trainer details...');
                 res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
             }
         }
     );
 };
-
-export const getTrainerByName = (req, res) => {
-    const nombre = req.params.nombre;
-    pool.query(
-        'SELECT * FROM getTrainerByName($1);',
-        [nombre],
-        (error, results) => {
-            if (error) {
-                console.error('Error getting trainer details:', error);
-                res.status(500).send('Error getting trainer details');
-            } else if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Trainer details not found' });
-            } else {
-                console.log('Fetching trainer details...');
-                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
-            }
-        }
-    );
-};
-
-
-export const getTrainerByAge = (req, res) => {
-    const edad = req.params.edad;
-    pool.query(
-        'SELECT * FROM getTrainerByAge($1);',
-        [edad],
-        (error, results) => {
-            if (error) {
-                console.error('Error getting trainer details:', error);
-                res.status(500).send('Error getting trainer details');
-            } else if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Trainer details not found' });
-            } else {
-                console.log('Fetching trainer details...');
-                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
-            }
-        }
-    );
-};
-
-

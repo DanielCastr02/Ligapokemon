@@ -24,16 +24,25 @@ export default {
         getTrainerDetalle(id){
             return axiosinstance.get(`trainers/detalle/${id}`);
         },
-        //filtros
-        getTrainersByGender(sexo){
-            return axiosinstance.get(`trainers/sexo/${sexo}`);
-        },
-        getTrainerByName(nombre){
-            return axiosinstance.get(`trainers/nombre/${nombre}`);
-        },
-        getTrainerByAge(edad){
-            return axiosinstance.get(`trainers/edad/${edad}`);
-        },
+        getTrainersFiltro(sexo, nombre, edad, dobInicio, dobFin) {
+            console.log({
+                sexo: sexo,
+                    nombre: nombre,
+                    edad: edad,
+                    dobInicio: dobInicio,
+                    dobFin: dobFin
+            })
+            return axiosinstance.get(`trainers/filtro`,{
+                params: {
+                    sexo: sexo,
+                    nombre: nombre,
+                    edad: edad,
+                    dobInicio: dobInicio,
+                    dobFin: dobFin
+            }});
+        }
+        
+        
     },
 
     pokemones: {
@@ -52,19 +61,22 @@ export default {
         deletePokemon(id) {
             return axiosinstance.delete(`pokemones/${id}`);
         },
-        //filtros
-        getPokemonesByName(nombre){
-            return axiosinstance.get(`pokemones/nombre/${nombre}`);
-        },
-        getPokemonesByType(tipo){
-            return axiosinstance.get(`pokemones/tipo/${tipo}`);
-        },
-        getPokemonesByApodo(apodo){
-            return axiosinstance.get(`pokemones/apodo/${apodo}`);
-        },
-        getPokemonesByGender(sexo){
-            return axiosinstance.get(`pokemones/sexo/${sexo}`);
-        },
+        //filtro
+        getPokemonesFiltro(nombre, tipo, apodo, sexo) {
+            console.log({
+                    nombre: nombre,
+                    tipo: tipo,
+                    apodo: apodo,
+                    sexo: sexo
+            })
+            return axiosinstance.get(`pokemones/filtro`,{
+                params: {
+                    nombre: nombre,
+                    tipo: tipo,
+                    apodo: apodo,
+                    sexo: sexo
+            }});
+        }
     },
 
     registros: {
@@ -86,14 +98,26 @@ export default {
         getRegistroDetalle(id){
             return axiosinstance.get(`registros/detalle/${id}`);
         },
-        getRegistrosByTrainerId(id){
-            return axiosinstance.get(`registros/trainer/${id}`);
-        },
         deleteRegistrosByTrainerId(id){
             return axiosinstance.delete(`registros/trainer/${id}`);
         },
         deleteRegistrosByPokemonId(id){
             return axiosinstance.delete(`registros/pokemon/${id}`);
+        },
+        //filtro
+        getRegistrosByTrainerId(id){
+            return axiosinstance.get(`registros/trainer/${id}`);
+        },
+        getRegistrosFiltro(idtrainer, idpokemon) {
+            console.log({
+                    idtrainer: idtrainer,
+                    idpokemon: idpokemon,
+            })
+            return axiosinstance.get(`registros/filtro`,{
+                params: {
+                    idtrainer: idtrainer,
+                    idpokemon: idpokemon,
+            }});
         }
     }
 };

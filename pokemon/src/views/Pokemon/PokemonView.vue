@@ -9,13 +9,17 @@
                     <!-- Filtro por Nombre -->
                     <div class="col-md-2">
                         <label for="nombre" class="form-label">Nombre:</label>
-                        <input name="nombre" id="nombre" type="text" class="form-control" @input="filtroNombre" placeholder="Buscar por nombre" />
+                        <input name="nombre" id="nombre" type="text" class="form-control" 
+                        @input="filtrar"
+                        @keypress="validateInput"
+                        ref="nombreInput"
+                        placeholder="Buscar por nombre" />
                     </div>
                     <!-- Filtro por tipo -->
                     <div class="col-md-2">
                         <label for="sexo" class="form-label">Tipo:</label>
-                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonTipo" @change="filtroTipo">
-                            <option value="Acero" :key="'None'" >None</option>
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonTipo" @change="filtrar">
+                            <option value="0" :key="0" >None</option>
                             <option value="Acero" :key="'Acero'" >Acero</option>
                             <option value="Agua" :key="'Agua'" >Agua</option>
                             <option value="Bicho" :key="'Bicho'" >Bicho</option>
@@ -39,16 +43,20 @@
                     <!-- Filtro por apodo -->
                     <div class="col-md-2">
                         <label for="apodo" class="form-label">Apodo:</label>
-                        <input name="apodo" id="apodo" type="text" class="form-control" @input="filtroApodo" placeholder="Buscar por apodo" />
+                        <input name="apodo" id="apodo" type="text" class="form-control" 
+                        @input="filtrar" 
+                        @keypress="validateInput"
+                        ref="apodoInput"
+                        placeholder="Buscar por apodo" />
                     </div>
 
                     <!-- Filtro por Sexo -->
                     <div class="col-md-2">
                         <label for="sexo" class="form-label">Sexo:</label>
-                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonSexo" @change="filtroSexo">
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonSexo" @change="filtrar">
                             <option value="2" :key="2">None</option>
-                            <option value="0" :key="0">Chico</option>
-                            <option value="1" :key="1">Chica</option>
+                            <option value="0" :key="0">Macho</option>
+                            <option value="1" :key="1">Hembra</option>
                         </select>
                     </div>
                 </div>
@@ -113,8 +121,8 @@
         },
         data() {
             return {
-                selectedPokemonSexo: '',
-                selectedPokemonTipo: '',
+                selectedPokemonSexo: '2',
+                selectedPokemonTipo: '0',
                 pokemones: [],
             };
         },
@@ -143,56 +151,36 @@
 
                 });
             },
-            //FILTROS
-            filtroNombre(event) {
-                const nombre = event.target.value.trim();
-                if (nombre.length > 0) {
-                    apiclient.pokemones.getPokemonesByName(nombre).then(res => {
-                        this.pokemones = res.data.pokemon;
-                    }).catch(error => {
-                        if (error.response && error.response.status === 404) {
-                            this.pokemones = []; 
-                        } else {
-                            console.error('Error al obtener el pokemones:', error);
-                        }
-                    });
-                } else {
-                    this.getPokemones();
+            //KEYPRESS
+            validateInput(event) {
+                const char = String.fromCharCode(event.keyCode);
+                const regex = /^[A-Za-z\s]+$/;
+                if (!regex.test(char)) {
+                    event.preventDefault();
                 }
             },
-            filtroTipo(){
-                if(this.selectedPokemonTipo == 'None'){
-                    apiclient.pokemones.getPokemonesByType(this.selectedPokemonTipo).then(res => {
+            //filtro
+            filtrar() {
+                const filtros = {
+                    nombre: this.$refs.nombreInput.value.trim() || null, 
+                    tipo: this.selectedPokemonTipo === '0' ? null : this.selectedPokemonTipo, 
+                    apodo: this.$refs.apodoInput.value.trim() || null, 
+                    sexo: this.selectedPokemonSexo === '2' ? null : this.selectedPokemonSexo,
+                };
+                
+                apiclient.pokemones.getPokemonesFiltro(
+                    filtros.nombre,
+                    filtros.tipo,
+                    filtros.apodo,
+                    filtros.sexo,
+                )
+                    .then(res => {
                         this.pokemones = res.data.pokemon;
+                    })
+                    .catch(error => {
+                        console.error('Error al filtrar pokemones:', error);
+                        this.pokemones = [];
                     });
-                }else{
-                    this.getPokemones();
-                }
-            },
-            filtroApodo(event) {
-                const apodo = event.target.value.trim();
-                if (apodo.length > 0) {
-                    apiclient.pokemones.getPokemonesByApodo(apodo).then(res => {
-                        this.pokemones = res.data.pokemon;
-                    }).catch(error => {
-                        if (error.response && error.response.status === 404) {
-                            this.pokemones = []; 
-                        } else {
-                            console.error('Error al obtener el pokemones:', error);
-                        }
-                    });
-                } else {
-                    this.getPokemones();
-                }
-            },
-            filtroSexo(){
-                if(this.selectedPokemonSexo != 2){
-                    apiclient.pokemones.getPokemonesByGender(this.selectedPokemonSexo).then(res => {
-                        this.pokemones = res.data.pokemon;
-                    });
-                }else{
-                    this.getPokemones();
-                }
             },
         }
     };

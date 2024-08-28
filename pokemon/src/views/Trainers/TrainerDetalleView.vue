@@ -56,6 +56,7 @@ import apiclient from '../../apiclient.js'
                 registros: [],
                 model:{
                     registro:{
+                        trainer_id: '',
                         trainer_nombre: '',
                         pokemon_id: '',
                         pokemon_nombre: '',
@@ -77,7 +78,6 @@ import apiclient from '../../apiclient.js'
             getRegistro(id) {
                 apiclient.trainers.getTrainerDetalle(id).then(res => {
                     this.registros = res.data.registro;
-                    this.model.trainer.nombre = this.registros[0].trainer_nombre;
                 });
             },
             getTrainerByID(id) {

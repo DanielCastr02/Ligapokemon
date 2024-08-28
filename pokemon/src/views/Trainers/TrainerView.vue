@@ -9,8 +9,8 @@
                     <!-- Filtro por Sexo -->
                     <div class="col-md-2">
                         <label for="sexo" class="form-label">Sexo:</label>
-                        <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="filtroSexo">
-                            <option value="2" :key="2">None</option>
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="filtrar">
+                            <option value="2" :key="2" selected>None</option>
                             <option value="0" :key="0">Chico</option>
                             <option value="1" :key="1">Chica</option>
                         </select>
@@ -20,29 +20,30 @@
                     <div class="col-md-2">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input name="nombre" id="nombre" type="text" class="form-control" 
-                        @input="filtroNombre" 
+                        @input="filtrar" 
                         @keypress="validateInputNombre"
-                        placeholder="Buscar por nombre" />
+                        placeholder="Buscar por nombre" ref="nombreInput"/>
                     </div>
-
-                    <!-- Filtro por Fechas de Nacimiento -->
                     <div class="col-md-3">
-                        <label for="fecha1" class="form-label">Fecha de Nacimiento Desde:</label>
-                        <input name="fecha1" id="fecha1" type="date" class="form-control" />
+                        <div>
+                            <label for="fecha1" class="form-label">DOB Inicio:</label>
+                            <input name="fecha1" id="fecha1" type="date" class="form-control" v-model="selectedTrainerDobInicio"/>
+                        </div>
+                        <div>
+                            <label for="fecha2" class="form-label">DOB Fin:</label>
+                            <input name="fecha2" id="fecha2" type="date" class="form-control" v-model="selectedTrainerDobFin"/>
+                        </div>
+                        <button class="btn btn-primary" @click="filtrar">
+                            Filtrar Fecha
+                        </button>
                     </div>
-
-                    <div class="col-md-3">
-                        <label for="fecha2" class="form-label">Fecha de Nacimiento Hasta:</label>
-                        <input name="fecha2" id="fecha2" type="date" class="form-control" />
-                    </div>
-
                     <!-- Filtro por Edad -->
                     <div class="col-md-2">
                         <label for="edad" class="form-label">Edad:</label>
                         <input name="edad" id="edad" type="number" class="form-control" 
-                        @input="filtroEdad"
+                        @input="filtrar"
                         @keypress="validateInputEdad" 
-                        placeholder="Edad del entrenador" />
+                        placeholder="Edad del entrenador" ref="edadInput" />
                     </div>
                 </div>
             </div>
@@ -119,7 +120,9 @@
         data() {
             return {
                 trainers: [],
-                selectedTrainerSexo: '',  
+                selectedTrainerSexo: '2',  
+                selectedTrainerDobInicio: '',  
+                selectedTrainerDobFin: '',  
                 model:{
                     trainer:{
                         id: '',
@@ -226,55 +229,34 @@
                 event.preventDefault();
             }
         },
-        //FILTROS
-        filtroSexo(){
-            if(this.selectedTrainerSexo != 2){
-                apiclient.trainers.getTrainersByGender(this.selectedTrainerSexo).then(res => {
+        filtrar() {
+            const filtros = {
+                sexo: this.selectedTrainerSexo === '2' ? null : this.selectedTrainerSexo,
+                nombre: this.$refs.nombreInput.value.trim() || null, 
+                edad: this.$refs.edadInput.value.trim() || null, 
+                dobInicio: this.selectedTrainerDobInicio || null,
+                dobFin: this.selectedTrainerDobFin || null
+            };
+            
+            apiclient.trainers.getTrainersFiltro(
+                filtros.sexo,
+                filtros.nombre,
+                filtros.edad,
+                filtros.dobInicio,
+                filtros.dobFin
+            )
+                .then(res => {
                     this.trainers = res.data.trainer;
+                })
+                .catch(error => {
+                    console.error('Error al filtrar entrenadores:', error);
+                    this.trainers = [];
                 });
-            }else{
-                this.getTrainers();
-            }
-        },
-        filtroNombre(event) {
-            const nombre = event.target.value.trim();
-            if (nombre.length > 0) {
-                apiclient.trainers.getTrainerByName(nombre).then(res => {
-                    this.trainers = res.data.trainer;
-                }).catch(error => {
-                    if (error.response && error.response.status === 404) {
-                        this.trainers = []; 
-                    } else {
-                        console.error('Error al obtener el entrenador:', error);
-                    }
-                });
-            } else {
-                this.getTrainers();
-            }
-        },
-        filtroEdad(event) {
-            const edad = event.target.value.trim();
-            if (edad.length > 0) {
-                apiclient.trainers.getTrainerByAge(edad).then(res => {
-                    this.trainers = res.data.trainer;
-                }).catch(error => {
-                    if (error.response && error.response.status === 404) {
-                        this.trainers = []; 
-                    } else {
-                        console.error('Error al obtener el entrenador:', error);
-                    }
-                });
-            } else {
-                this.getTrainers();
-            }
-        },
-
-
-
-
-
         }
-    };
+
+
+    }
+};
 </script>
 
 <style scoped>

@@ -70,77 +70,42 @@ export const deletePokemon = (req, res) => {
         }
     });
 }
+//filtro
+export const getPokemonesFiltro = (req, res) => {
+    const nombre = req.query.nombre === undefined ? null : req.query.nombre;
+    const tipo = req.query.tipo === undefined ? null : req.query.tipo;
+    const apodo = req.query.apodo === undefined ? null : req.query.apodo;
+    const sexo = req.query.sexo === undefined ? null: Number(req.query.sexo);
+    console.log({
+        nombre: nombre,
+        tipo: tipo,
+        apodo: apodo,
+        sexo: sexo
+    })
 
-export const getPokemonesByName = (req, res) => {
-    const nombre = req.params.nombre;
+    const query = `
+        SELECT * FROM getPokemonesFiltro(
+            $1::VARCHAR, 
+            $2::VARCHAR, 
+            $3::VARCHAR, 
+            $4::INT
+        );
+    `;
     pool.query(
-        'SELECT * FROM getPokemonesByName($1);',
-        [nombre],
+        query,
+        [
+            nombre ,
+            tipo ,  
+            apodo , 
+            sexo ,  
+        ],
         (error, results) => {
             if (error) {
-                console.error('Error getting pokemon details:', error);
+                console.error('Error getting pokemons details:', error);
                 res.status(500).send('Error getting pokemon details');
             } else if (results.rows.length === 0) {
                 res.status(404).json({ message: 'Pokemon details not found' });
             } else {
-                console.log('Fetching pokemon details...');
-                res.status(200).json({ message: 'Pokemon details fetched successfully', pokemon: results.rows });
-            }
-        }
-    );
-};
-
-export const getPokemonesByType = (req, res) => {
-    const tipo = req.params.tipo;
-    pool.query(
-        'SELECT * FROM getPokemonesByType($1);',
-        [tipo],
-        (error, results) => {
-            if (error) {
-                console.error('Error getting pokemon details:', error);
-                res.status(500).send('Error getting pokemon details');
-            } else if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Pokemon details not found' });
-            } else {
-                console.log('Fetching pokemon details...');
-                res.status(200).json({ message: 'Pokemon details fetched successfully', pokemon: results.rows });
-            }
-        }
-    );
-};
-
-export const getPokemonesByApodo = (req, res) => {
-    const apodo = req.params.apodo;
-    pool.query(
-        'SELECT * FROM getPokemonesByApodo($1);',
-        [apodo],
-        (error, results) => {
-            if (error) {
-                console.error('Error getting pokemon details:', error);
-                res.status(500).send('Error getting pokemon details');
-            } else if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Pokemon details not found' });
-            } else {
-                console.log('Fetching pokemon details...');
-                res.status(200).json({ message: 'Pokemon details fetched successfully', pokemon: results.rows });
-            }
-        }
-    );
-};
-
-export const getPokemonesByGender = (req, res) => {
-    const sexo = req.params.sexo;
-    pool.query(
-        'SELECT * FROM getPokemonesByGender($1);',
-        [sexo],
-        (error, results) => {
-            if (error) {
-                console.error('Error getting pokemon details:', error);
-                res.status(500).send('Error getting pokemon details');
-            } else if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Pokemon details not found' });
-            } else {
-                console.log('Fetching pokemon details...');
                 res.status(200).json({ message: 'Pokemon details fetched successfully', pokemon: results.rows });
             }
         }
