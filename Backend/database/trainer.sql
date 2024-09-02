@@ -133,8 +133,58 @@ END;
 $$
 LANGUAGE plpgsql;
 
---filtro dinamico:
+
+
+
+--Get Trainer Filtro
 CREATE FUNCTION getTrainersFiltro(
+    trainer_sexo INT DEFAULT NULL,
+    trainer_nombre VARCHAR DEFAULT NULL,
+    trainer_edad INT DEFAULT NULL,
+    trainer_dobInicio DATE DEFAULT NULL,
+    trainer_dobFin DATE DEFAULT NULL,
+    trainer_limit INT DEFAULT NULL,
+    trainer_offset INT DEFAULT NULL
+)
+RETURNS TABLE(
+    id INT,
+    sexo INT,
+    nombre VARCHAR,
+    edad INT,
+    dob DATE,
+    estado INT,
+    total_count BIGINT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        trainer.id, 
+        trainer.sexo, 
+        trainer.nombre, 
+        trainer.edad, 
+        trainer.dob, 
+        trainer.estado,
+        (SELECT COUNT(*) 
+         FROM trainer t
+         WHERE (trainer_sexo IS NULL OR t.sexo = trainer_sexo)
+           AND (trainer_nombre IS NULL OR t.nombre ILIKE '%' || trainer_nombre || '%')
+           AND (trainer_edad IS NULL OR t.edad = trainer_edad)
+           AND (trainer_dobInicio IS NULL OR t.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+        ) AS total_count
+    FROM trainer
+    WHERE (trainer_sexo IS NULL OR trainer.sexo = trainer_sexo)
+      AND (trainer_nombre IS NULL OR trainer.nombre ILIKE '%' || trainer_nombre || '%')
+      AND (trainer_edad IS NULL OR trainer.edad = trainer_edad)
+      AND (trainer_dobInicio IS NULL OR trainer.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+    ORDER BY trainer.id ASC
+    LIMIT trainer_limit OFFSET trainer_offset;
+END;
+$$
+LANGUAGE plpgsql;
+
+--funcion para pdf
+CREATE FUNCTION getTrainersPDF(
     trainer_sexo INT DEFAULT NULL,
     trainer_nombre VARCHAR DEFAULT NULL,
     trainer_edad INT DEFAULT NULL,
@@ -147,12 +197,26 @@ RETURNS TABLE(
     nombre VARCHAR,
     edad INT,
     dob DATE,
-    estado INT
+    estado INT,
+    total_count BIGINT
 )
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado
+    SELECT 
+        trainer.id, 
+        trainer.sexo, 
+        trainer.nombre, 
+        trainer.edad, 
+        trainer.dob, 
+        trainer.estado,
+        (SELECT COUNT(*) 
+         FROM trainer t
+         WHERE (trainer_sexo IS NULL OR t.sexo = trainer_sexo)
+           AND (trainer_nombre IS NULL OR t.nombre ILIKE '%' || trainer_nombre || '%')
+           AND (trainer_edad IS NULL OR t.edad = trainer_edad)
+           AND (trainer_dobInicio IS NULL OR t.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+        ) AS total_count
     FROM trainer
     WHERE (trainer_sexo IS NULL OR trainer.sexo = trainer_sexo)
       AND (trainer_nombre IS NULL OR trainer.nombre ILIKE '%' || trainer_nombre || '%')
@@ -162,3 +226,4 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+

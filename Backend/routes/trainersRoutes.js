@@ -1,9 +1,10 @@
 import {Router} from 'express';
-import {getTrainers, getTrainerById, createTrainer, deleteTrainer, updateTrainer, getTrainerDetalle, getTrainersFiltro} from '../controllers/trainerController.js';
+import {getTrainers, getTrainerById, createTrainer, deleteTrainer, updateTrainer, getTrainerDetalle, getTrainersFiltro, getTrainersPDF} from '../controllers/trainerController.js';
 
 const trainersRoutes = Router();
 
 //filtro
+trainersRoutes.get('/api/trainers/pdf', getTrainersPDF);
 trainersRoutes.get('/api/trainers/filtro', getTrainersFiltro);
 
 trainersRoutes.get('/api/trainers', getTrainers);

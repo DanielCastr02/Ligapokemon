@@ -2,14 +2,14 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                <h4>Filtrar Entrenadores</h4>
+                <h4>getTrainers Entrenadores</h4>
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <!-- Filtro por Sexo -->
                     <div class="col-md-2">
                         <label for="sexo" class="form-label">Sexo:</label>
-                        <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="filtrar">
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedTrainerSexo" @change="getTrainers">
                             <option value="2" :key="2" selected>None</option>
                             <option value="0" :key="0">Chico</option>
                             <option value="1" :key="1">Chica</option>
@@ -20,7 +20,7 @@
                     <div class="col-md-2">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input name="nombre" id="nombre" type="text" class="form-control" 
-                        @input="filtrar" 
+                        @input="getTrainers" 
                         @keypress="validateInputNombre"
                         placeholder="Buscar por nombre" ref="nombreInput"/>
                     </div>
@@ -33,7 +33,7 @@
                             <label for="fecha2" class="form-label">DOB Fin:</label>
                             <input name="fecha2" id="fecha2" type="date" class="form-control" v-model="selectedTrainerDobFin"/>
                         </div>
-                        <button class="btn btn-primary" @click="filtrar">
+                        <button class="btn btn-primary" @click="getTrainers">
                             Filtrar Fecha
                         </button>
                     </div>
@@ -41,7 +41,7 @@
                     <div class="col-md-2">
                         <label for="edad" class="form-label">Edad:</label>
                         <input name="edad" id="edad" type="number" class="form-control" 
-                        @input="filtrar"
+                        @input="getTrainers"
                         @keypress="validateInputEdad" 
                         placeholder="Edad del entrenador" ref="edadInput" />
                     </div>
@@ -107,6 +107,14 @@
                     </tr>
                 </tbody>
             </table>
+            <div>
+                <button class="btn btn-primary" @click="prevPage" :disabled="currentPage === 0">Anterior</button>
+                <button class="btn btn-primary" @click="nextPage" :disabled="currentPage >= pageCount - 1">Siguiente</button>
+            </div>
+            <div class="pagination-info">
+                Página {{ currentPage + 1 }} de {{ pageCount }} | Total de Entrenadores: {{ totalItems }}
+            </div>
+
         </div>
     </div>
 </template>
@@ -125,9 +133,16 @@
         data() {
             return {
                 trainers: [],
+                trainer_pdf: [],
                 selectedTrainerSexo: '2',  
                 selectedTrainerDobInicio: '',  
                 selectedTrainerDobFin: '',  
+
+                currentPage: 0,
+                pageSize: 10, 
+                pageCount: 0,     
+                totalItems: 0,
+
                 model:{
                     trainer:{
                         id: '',
@@ -136,6 +151,7 @@
                         edad:'',
                         dob: '',
                         estado: '',
+                        total_count: '',
                     },
                     registro:{
                         id: '',
@@ -151,8 +167,33 @@
         },
         methods: {
             getTrainers() {
-                apiclient.trainers.getTrainers().then(res => {
-                    this.trainers = res.data.trainer;
+                const filtros = {
+                    sexo: this.selectedTrainerSexo === '2' ? null : this.selectedTrainerSexo,
+                    nombre: this.$refs.nombreInput.value.trim() || null,
+                    edad: this.$refs.edadInput.value.trim() || null,
+                    dobInicio: this.selectedTrainerDobInicio || null,
+                    dobFin: this.selectedTrainerDobFin || null,
+                    limit: this.pageSize,
+                    offset: this.currentPage * this.pageSize
+                };
+
+                apiclient.trainers.getTrainersFiltro(
+                    filtros.sexo,
+                    filtros.nombre,
+                    filtros.edad,
+                    filtros.dobInicio,
+                    filtros.dobFin,
+                    filtros.limit,
+                    filtros.offset
+                )
+                .then(res => {
+                    this.trainers = res.data.trainer; 
+                    this.totalItems = res.data.trainer[0].total_count;
+                    this.pageCount = Math.ceil(this.totalItems / this.pageSize);
+                })
+                .catch(error => {
+                    console.error("Error al obtener los entrenadores:", error);
+                    this.errorMessage = "No se pudieron cargar los entrenadores. Por favor, inténtelo de nuevo más tarde.";
                 });
             },
             borrarTrainer(idTrainerDelete) {
@@ -234,51 +275,51 @@
                     event.preventDefault();
                 }
             },
-            filtrar() {
+            crearPDF() {
                 const filtros = {
                     sexo: this.selectedTrainerSexo === '2' ? null : this.selectedTrainerSexo,
-                    nombre: this.$refs.nombreInput.value.trim() || null, 
-                    edad: this.$refs.edadInput.value.trim() || null, 
+                    nombre: this.$refs.nombreInput.value.trim() || null,
+                    edad: this.$refs.edadInput.value.trim() || null,
                     dobInicio: this.selectedTrainerDobInicio || null,
                     dobFin: this.selectedTrainerDobFin || null
                 };
-                
-                apiclient.trainers.getTrainersFiltro(
+
+                apiclient.trainers.getTrainersPDF(
                     filtros.sexo,
                     filtros.nombre,
                     filtros.edad,
                     filtros.dobInicio,
                     filtros.dobFin
-                )
-                    .then(res => {
-                        this.trainers = res.data.trainer;
-                    })
-                    .catch(error => {
-                        console.error('Error al filtrar entrenadores:', error);
-                        this.trainers = [];
-                    });
-            },
-            crearPDF() {
-            const doc = new jsPDF();
-            doc.text('Lista de Entrenadores', 10, 10);
-            doc.autoTable({
-                html: '#trainersTable', 
-                columns: [
-                    { header: 'Id', dataKey: '0' },
-                    { header: 'Sexo', dataKey: '1' },
-                    { header: 'Nombre', dataKey: '2' },
-                    { header: 'Edad', dataKey: '3' },
-                    { header: 'DOB', dataKey: '4' },
-                    { header: 'estado', dataKey: '5' },
-                ],
-                columnStyles: {
-                    5: { display: 'none' }, 
+                )       
+                .then(res => {
+                    this.trainer_pdf = res.data.trainer_pdf; 
+                    //this.totalItems = res.data.trainer_pdf[0].total_count;
+                })
+                .catch(error => {
+                    console.error("Error al obtener los entrenadores:", error);
+                    this.errorMessage = "No se pudieron cargar los entrenadores. Por favor, inténtelo de nuevo más tarde.";
+                });
+
+                const doc = new jsPDF();
+                doc.text('Lista de Entrenadores', 10, 10);
+                doc.autoTable({
+                    head: [['Id', 'Sexo', 'Nombre', 'Edad', 'DOB', 'Estado']],
+                    body: this.trainer_pdf.map(trainer => [trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob.slice(0,10), trainer.estado === 0 ? 'Inactivo' : 'Activo' ])
+                });
+                doc.save('trainers.pdf');
                 },
-            });
-            doc.save('trainers.pdf');
-    }
-
-
+                nextPage() {
+                    if (this.currentPage < this.pageCount - 1) {
+                        this.currentPage++;
+                        this.getTrainers();
+                    }
+            },
+            prevPage() {
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                    this.getTrainers();
+                }
+            },
     }
 };
 </script>
@@ -297,4 +338,10 @@
     .text-center {
         text-align: center;
     }
+    .pagination-info {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
 </style>

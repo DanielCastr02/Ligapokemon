@@ -100,12 +100,65 @@ export const getTrainersFiltro = (req, res) => {
     const edad = req.query.edad === undefined ? null: Number(req.query.edad);
     const dobInicio = req.query.dobInicio === undefined ? null : req.query.dobInicio;
     const dobFin = req.query.dobFin === undefined ? null : req.query.dobFin;
+    const limit = req.query.limit === undefined ? null : Number(req.query.limit);
+    const offset = req.query.offset === undefined ? null : Number(req.query.offset);
     console.log({
         sexo: sexo,
         nombre: nombre,
         edad: edad,
         dobInicio: dobInicio,
-        dobFin: dobFin
+        dobFin: dobFin,
+        limit: limit,
+        offset: offset
+    })
+
+    const query = `
+        SELECT * FROM getTrainersFiltro(
+            $1::INT, 
+            $2::VARCHAR, 
+            $3::INT, 
+            $4::DATE, 
+            $5::DATE,
+            $6::INT,
+            $7::INT
+        );
+    `;
+    pool.query(
+        query,
+        [
+            sexo , 
+            nombre ,
+            edad ,  
+            dobInicio , 
+            dobFin,
+            limit,
+            offset
+        ],
+        (error, results) => {
+            if (error) {
+                console.error('Error getting trainer details:', error);
+                res.status(500).send('Error getting trainer details');
+            } else if (results.rows.length === 0) {
+                res.status(404).json({ message: 'Trainer details not found' });
+            } else {
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
+            }
+        }
+    );
+};
+//filtro
+export const getTrainersPDF = (req, res) => {
+    const sexo = req.query.sexo === undefined ? null: Number(req.query.sexo);
+    const nombre = req.query.nombre === undefined ? null : req.query.nombre;
+    const edad = req.query.edad === undefined ? null: Number(req.query.edad);
+    const dobInicio = req.query.dobInicio === undefined ? null : req.query.dobInicio;
+    const dobFin = req.query.dobFin === undefined ? null : req.query.dobFin;
+    console.log({
+        sexo: sexo,
+        nombre: nombre,
+        edad: edad,
+        dobInicio: dobInicio,
+        dobFin: dobFin,
     })
 
     const query = `
@@ -124,7 +177,7 @@ export const getTrainersFiltro = (req, res) => {
             nombre ,
             edad ,  
             dobInicio , 
-            dobFin 
+            dobFin
         ],
         (error, results) => {
             if (error) {
@@ -133,7 +186,7 @@ export const getTrainersFiltro = (req, res) => {
             } else if (results.rows.length === 0) {
                 res.status(404).json({ message: 'Trainer details not found' });
             } else {
-                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer_pdf: results.rows });
             }
         }
     );

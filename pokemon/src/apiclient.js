@@ -24,13 +24,15 @@ export default {
         getTrainerDetalle(id){
             return axiosinstance.get(`trainers/detalle/${id}`);
         },
-        getTrainersFiltro(sexo, nombre, edad, dobInicio, dobFin) {
+        getTrainersFiltro(sexo, nombre, edad, dobInicio, dobFin,limit, offset) {
             console.log({
                 sexo: sexo,
                     nombre: nombre,
                     edad: edad,
                     dobInicio: dobInicio,
-                    dobFin: dobFin
+                    dobFin: dobFin,
+                    limit: limit,
+                    offset: offset
             })
             return axiosinstance.get(`trainers/filtro`,{
                 params: {
@@ -38,9 +40,28 @@ export default {
                     nombre: nombre,
                     edad: edad,
                     dobInicio: dobInicio,
+                    dobFin: dobFin,
+                    limit: limit,
+                    offset: offset 
+            }});
+        },
+        getTrainersPDF(sexo, nombre, edad, dobInicio, dobFin) {
+            console.log({
+                sexo: sexo,
+                    nombre: nombre,
+                    edad: edad,
+                    dobInicio: dobInicio,
+                    dobFin: dobFin
+            })
+            return axiosinstance.get(`trainers/pdf`,{
+                params: {
+                    sexo: sexo,
+                    nombre: nombre,
+                    edad: edad,
+                    dobInicio: dobInicio,
                     dobFin: dobFin
             }});
-        }
+        },
         
         
     },
