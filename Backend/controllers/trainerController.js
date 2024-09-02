@@ -146,7 +146,8 @@ export const getTrainersFiltro = (req, res) => {
         }
     );
 };
-//filtro
+
+
 export const getTrainersPDF = (req, res) => {
     const sexo = req.query.sexo === undefined ? null: Number(req.query.sexo);
     const nombre = req.query.nombre === undefined ? null : req.query.nombre;
@@ -162,7 +163,7 @@ export const getTrainersPDF = (req, res) => {
     })
 
     const query = `
-        SELECT * FROM getTrainersFiltro(
+        SELECT * FROM getTrainersPDF(
             $1::INT, 
             $2::VARCHAR, 
             $3::INT, 

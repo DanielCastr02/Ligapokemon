@@ -10,7 +10,7 @@
                     <div class="col-md-2">
                         <label for="idtrainer" class="form-label">idtrainer:</label>
                         <input name="idtrainer" id="idtrainer" type="number" class="form-control"
-                        @input="filtrar"
+                        @input="getRegistros"
                         @keypress="validateInput" 
                         ref="idTrainerInput"
                          />
@@ -19,7 +19,7 @@
                     <div class="col-md-2">
                         <label for="idpokemon" class="form-label">idpokemon:</label>
                         <input name="idpokemon" id="idpokemon" type="number" class="form-control" 
-                        @input="filtrar"
+                        @input="getRegistros"
                         @keypress="validateInput"
                         ref="idPokemonInput"
                         />
@@ -81,6 +81,13 @@
                     </tr>
                 </tbody>
             </table>
+            <div>
+                <button class="btn btn-primary" @click="prevPage" :disabled="currentPage === 0">Anterior</button>
+                <button class="btn btn-primary" @click="nextPage" :disabled="currentPage >= pageCount - 1">Siguiente</button>
+            </div>
+            <div class="pagination-info">
+                Página {{ currentPage + 1 }} de {{ pageCount }} | Total de Entrenadores: {{ totalItems }}
+            </div>
         </div>
     </div>
 </template>
@@ -99,6 +106,12 @@
         data() {
             return {
                 registros: [],
+
+                currentPage: 0,
+                pageSize: 10, 
+                pageCount: 0,     
+                totalItems: 0,
+
                 model:{
                     registro:{
                         id: '',
@@ -114,8 +127,26 @@
         },
         methods: {
             getRegistros() {
-                apiclient.registros.getRegistros().then(res => {
+                const filtros = {
+                    idtrainer: this.$refs.idTrainerInput.value.trim() || null,
+                    idpokemon: this.$refs.idPokemonInput.value.trim() || null,
+                    limit: this.pageSize,
+                    offset: this.currentPage * this.pageSize
+                };
+                apiclient.registros.getRegistrosFiltro(
+                    filtros.idtrainer,
+                    filtros.idpokemon,
+                    filtros.limit,
+                    filtros.offset
+                )
+                .then(res => {
                     this.registros = res.data.registro;
+                    this.totalItems = res.data.registro[0].total_count;
+                    this.pageCount = Math.ceil(this.totalItems / this.pageSize);
+                })
+                .catch(error => {
+                    console.error('Error al filtrar registros:', error);
+                    this.registros = [];
                 });
             },
             borrarRegistro(idRegistroDelete) {
@@ -153,25 +184,6 @@
                     event.preventDefault();
                 }
             },
-            //FILTRO
-            filtrar() {
-                const filtros = {
-                    idtrainer: this.$refs.idTrainerInput.value.trim() || null,
-                    idpokemon: this.$refs.idPokemonInput.value.trim() || null
-                };
-                
-                apiclient.registros.getRegistrosFiltro(
-                    filtros.idtrainer,
-                    filtros.idpokemon
-                )
-                    .then(res => {
-                        this.registros = res.data.registro;
-                    })
-                    .catch(error => {
-                        console.error('Error al filtrar registros:', error);
-                        this.registros = [];
-                    });
-            },
             crearPDF() {
                 const doc = new jsPDF();
                 doc.text('Lista de Registros', 10, 10);
@@ -188,7 +200,19 @@
                     },
                 });
                 doc.save('registros.pdf');
-            }
+            },
+            nextPage() {
+                if (this.currentPage < this.pageCount - 1) {
+                    this.currentPage++;
+                    this.getRegistros();
+                }
+            },
+            prevPage() {
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                    this.getRegistros();
+                }
+            },
             
         }
     };

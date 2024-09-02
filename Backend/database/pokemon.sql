@@ -99,6 +99,51 @@ CREATE FUNCTION getPokemonesFiltro(
     pokemon_nombre VARCHAR DEFAULT NULL,
     pokemon_tipo VARCHAR DEFAULT NULL,
     pokemon_apodo VARCHAR DEFAULT NULL,
+    pokemon_sexo INT DEFAULT NULL,
+    pokemon_limit INT DEFAULT NULL,
+    pokemon_offset INT DEFAULT NULL
+)
+RETURNS TABLE(
+    id INT,
+    nombre VARCHAR,
+    tipo VARCHAR,
+    apodo VARCHAR,
+    sexo INT,
+    total_count BIGINT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        pokemon.id, 
+        pokemon.nombre, 
+        pokemon.tipo, 
+        pokemon.apodo, 
+        pokemon.sexo, 
+        (SELECT COUNT(*) 
+         FROM pokemon p
+         WHERE (pokemon_nombre IS NULL OR p.nombre ILIKE '%' || pokemon_nombre || '%')
+           AND (pokemon_tipo IS NULL OR p.tipo LIKE pokemon_tipo)
+           AND (pokemon_apodo IS NULL OR p.apodo ILIKE '%' || pokemon_apodo || '%')
+           AND (pokemon_sexo IS NULL OR p.sexo = pokemon_sexo)
+        ) AS total_count
+    FROM pokemon
+    WHERE (pokemon_nombre IS NULL OR  pokemon.nombre ILIKE '%' || pokemon_nombre || '%')
+        AND (pokemon_tipo IS NULL OR  pokemon.tipo LIKE pokemon_tipo)
+        AND (pokemon_apodo IS NULL OR  pokemon.apodo ILIKE '%' || pokemon_apodo || '%')
+        AND (pokemon_sexo IS NULL OR  pokemon.sexo = pokemon_sexo)
+    ORDER BY pokemon.id ASC
+    LIMIT pokemon_limit OFFSET pokemon_offset;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+--Filtro dinamico:
+CREATE FUNCTION getPokemonesPDF(
+    pokemon_nombre VARCHAR DEFAULT NULL,
+    pokemon_tipo VARCHAR DEFAULT NULL,
+    pokemon_apodo VARCHAR DEFAULT NULL,
     pokemon_sexo INT DEFAULT NULL
 )
 RETURNS TABLE(
@@ -106,20 +151,32 @@ RETURNS TABLE(
     nombre VARCHAR,
     tipo VARCHAR,
     apodo VARCHAR,
-    sexo INT
+    sexo INT,
+    total_count BIGINT
 )
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT pokemon.id, pokemon.nombre, pokemon.tipo, pokemon.apodo, pokemon.sexo
+    SELECT 
+        pokemon.id, 
+        pokemon.nombre, 
+        pokemon.tipo, 
+        pokemon.apodo, 
+        pokemon.sexo, 
+        (SELECT COUNT(*) 
+         FROM pokemon p
+         WHERE (pokemon_nombre IS NULL OR p.nombre ILIKE '%' || pokemon_nombre || '%')
+           AND (pokemon_tipo IS NULL OR p.tipo LIKE pokemon_tipo)
+           AND (pokemon_apodo IS NULL OR p.apodo ILIKE '%' || pokemon_apodo || '%')
+           AND (pokemon_sexo IS NULL OR p.sexo = pokemon_sexo)
+        ) AS total_count
     FROM pokemon
-    WHERE (pokemon_nombre IS NULL OR pokemon.nombre ILIKE '%' || pokemon_nombre || '%')
-      AND (pokemon_tipo IS NULL OR pokemon.tipo = pokemon_tipo)
-      AND (pokemon_apodo IS NULL OR pokemon.apodo ILIKE '%' || pokemon_apodo || '%')
-      AND (pokemon_sexo IS NULL OR pokemon.sexo = pokemon_sexo)
-    ORDER BY pokemon.id ASC;
+    WHERE (pokemon_nombre IS NULL OR  pokemon.nombre ILIKE '%' || pokemon_nombre || '%')
+        AND (pokemon_tipo IS NULL OR  pokemon.tipo = pokemon_tipo)
+        AND (pokemon_apodo IS NULL OR  pokemon.apodo ILIKE '%' || pokemon_apodo || '%')
+        AND (pokemon_sexo IS NULL OR  pokemon.sexo = pokemon_sexo)
+    ORDER BY pokemon.id ASC
+    LIMIT pokemon_limit OFFSET pokemon_offset;
 END;
 $$
 LANGUAGE plpgsql;
-
-

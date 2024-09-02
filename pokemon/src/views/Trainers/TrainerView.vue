@@ -2,7 +2,7 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                <h4>getTrainers Entrenadores</h4>
+                <h4>Filtrar Trainers:</h4>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -313,13 +313,13 @@
                         this.currentPage++;
                         this.getTrainers();
                     }
-            },
-            prevPage() {
-                if (this.currentPage > 0) {
-                    this.currentPage--;
-                    this.getTrainers();
-                }
-            },
+                },
+                prevPage() {
+                    if (this.currentPage > 0) {
+                        this.currentPage--;
+                        this.getTrainers();
+                    }
+                },
     }
 };
 </script>

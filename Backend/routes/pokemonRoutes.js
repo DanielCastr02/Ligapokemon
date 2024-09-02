@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getPokemon, getPokemonById, createPokemon, deletePokemon, updatePokemon, getPokemonesFiltro} from "../controllers/pokemonController.js";
+import { getPokemon, getPokemonById, createPokemon, deletePokemon, updatePokemon, getPokemonesFiltro, getPokemonesPDF} from "../controllers/pokemonController.js";
 
 const pokemonRoutes = Router();
 
 //filtro
+pokemonRoutes.get('/api/pokemones/pdf', getPokemonesPDF);
 pokemonRoutes.get('/api/pokemones/filtro', getPokemonesFiltro);
 
 pokemonRoutes.get('/api/pokemones', getPokemon);

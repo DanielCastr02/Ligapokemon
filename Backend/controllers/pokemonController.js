@@ -70,8 +70,57 @@ export const deletePokemon = (req, res) => {
         }
     });
 }
-//filtro
 export const getPokemonesFiltro = (req, res) => {
+    const nombre = req.query.nombre === undefined ? null : req.query.nombre;
+    const tipo = req.query.tipo === undefined ? null : req.query.tipo;
+    const apodo = req.query.apodo === undefined ? null : req.query.apodo;
+    const sexo = req.query.sexo === undefined ? null: Number(req.query.sexo);
+    const limit = req.query.limit === undefined ? null : Number(req.query.limit);
+    const offset = req.query.offset === undefined ? null : Number(req.query.offset);
+
+    console.log({
+        nombre: nombre,
+        tipo: tipo,
+        apodo: apodo,
+        sexo: sexo,
+        limit: limit,
+        offset: offset
+    })
+
+    const query = `
+        SELECT * FROM getPokemonesFiltro(
+            $1::VARCHAR, 
+            $2::VARCHAR, 
+            $3::VARCHAR, 
+            $4::INT,
+            $5::INT,
+            $6::INT
+        );
+    `;
+    pool.query(
+        query,
+        [
+            nombre ,
+            tipo ,  
+            apodo , 
+            sexo ,  
+            limit,
+            offset
+        ],
+        (error, results) => {
+            if (error) {
+                console.error('Error getting pokemons details:', error);
+                res.status(500).send('Error getting pokemon details');
+            } else if (results.rows.length === 0) {
+                res.status(404).json({ message: 'Pokemon details not found' });
+            } else {
+                res.status(200).json({ message: 'Pokemon details fetched successfully', pokemon: results.rows });
+            }
+        }
+    );
+};
+
+export const getPokemonesPDF = (req, res) => {
     const nombre = req.query.nombre === undefined ? null : req.query.nombre;
     const tipo = req.query.tipo === undefined ? null : req.query.tipo;
     const apodo = req.query.apodo === undefined ? null : req.query.apodo;
@@ -84,7 +133,7 @@ export const getPokemonesFiltro = (req, res) => {
     })
 
     const query = `
-        SELECT * FROM getPokemonesFiltro(
+        SELECT * FROM getPokemonesPDF(
             $1::VARCHAR, 
             $2::VARCHAR, 
             $3::VARCHAR, 

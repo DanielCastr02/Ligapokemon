@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { getRegistros, getRegistroById, createRegistro, deleteRegistro, updateRegistro, getRegistroDetalle, 
-    getRegistrosByTrainerId, deleteRegistrosByTrainerId , deleteRegistrosByPokemonId, getRegistrosFiltro} from '../controllers/registroController.js'
+    getRegistrosByTrainerId, deleteRegistrosByTrainerId , deleteRegistrosByPokemonId, getRegistrosFiltro, getRegistrosPDF} from '../controllers/registroController.js'
 
 const registroRoutes = Router();
 
 //filtro
+registroRoutes.get('/api/registros/pdf', getRegistrosPDF);
 registroRoutes.get('/api/registros/filtro', getRegistrosFiltro);
 
 registroRoutes.get('/api/registros', getRegistros);

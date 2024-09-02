@@ -10,7 +10,7 @@
                     <div class="col-md-2">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input name="nombre" id="nombre" type="text" class="form-control" 
-                        @input="filtrar"
+                        @input="getPokemones"
                         @keypress="validateInput"
                         ref="nombreInput"
                         placeholder="Buscar por nombre" />
@@ -18,7 +18,7 @@
                     <!-- Filtro por tipo -->
                     <div class="col-md-2">
                         <label for="sexo" class="form-label">Tipo:</label>
-                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonTipo" @change="filtrar">
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonTipo" @change="getPokemones">
                             <option value="0" :key="0" >None</option>
                             <option value="Acero" :key="'Acero'" >Acero</option>
                             <option value="Agua" :key="'Agua'" >Agua</option>
@@ -44,7 +44,7 @@
                     <div class="col-md-2">
                         <label for="apodo" class="form-label">Apodo:</label>
                         <input name="apodo" id="apodo" type="text" class="form-control" 
-                        @input="filtrar" 
+                        @input="getPokemones" 
                         @keypress="validateInput"
                         ref="apodoInput"
                         placeholder="Buscar por apodo" />
@@ -53,7 +53,7 @@
                     <!-- Filtro por Sexo -->
                     <div class="col-md-2">
                         <label for="sexo" class="form-label">Sexo:</label>
-                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonSexo" @change="filtrar">
+                        <select name="sexo" id="sexo" class="form-control" v-model="selectedPokemonSexo" @change="getPokemones">
                             <option value="2" :key="2">None</option>
                             <option value="0" :key="0">Macho</option>
                             <option value="1" :key="1">Hembra</option>
@@ -109,6 +109,13 @@
                     </tr>
                 </tbody>
             </table>
+            <div>
+                <button class="btn btn-primary" @click="prevPage" :disabled="currentPage === 0">Anterior</button>
+                <button class="btn btn-primary" @click="nextPage" :disabled="currentPage >= pageCount - 1">Siguiente</button>
+            </div>
+            <div class="pagination-info">
+                Página {{ currentPage + 1 }} de {{ pageCount }} | Total de Entrenadores: {{ totalItems }}
+            </div>
         </div>
     </div>
 </template>
@@ -126,9 +133,25 @@
         },
         data() {
             return {
+                pokemones: [],
                 selectedPokemonSexo: '2',
                 selectedPokemonTipo: '0',
-                pokemones: [],
+
+                currentPage: 0,
+                pageSize: 10, 
+                pageCount: 0,     
+                totalItems: 0,
+
+                model:{
+                    pokemon:{
+                        id: '',
+                        nombre:'',
+                        tipo: '',
+                        apodo:'',
+                        sexo:'',
+                        total_count: ''
+                    }
+                }
             };
         },
         mounted() {
@@ -136,8 +159,30 @@
         },
         methods: {
             getPokemones() {
-                apiclient.pokemones.getPokemones().then(res => {
-                    this.pokemones = res.data.pokemon;
+                const filtros = {
+                    nombre: this.$refs.nombreInput.value.trim() || null,
+                    tipo: this.selectedPokemonTipo === '0' ? null : this.this.selectedPokemonTipo,
+                    apodo: this.$refs.apodoInput.value.trim() || null,
+                    sexo: this.selectedPokemonSexo === '2' ? null : this.selectedPokemonSexo,
+                    limit: this.pageSize,
+                    offset: this.currentPage * this.pageSize
+                };
+                apiclient.pokemones.getPokemonesFiltro(
+                    filtros.nombre,
+                    filtros.tipo,
+                    filtros.apodo,
+                    filtros.sexo,
+                    filtros.limit,
+                    filtros.offset
+                )
+                .then(res => {
+                    this.pokemones = res.data.pokemon; 
+                    this.totalItems = res.data.pokemon[0].total_count;
+                    this.pageCount = Math.ceil(this.totalItems / this.pageSize);
+                })
+                .catch(error => {
+                    console.error("Error al obtener los pokemones:", error);
+                    this.errorMessage = "No se pudieron cargar los pokemones. Por favor, inténtelo de nuevo más tarde.";
                 });
             },
             borrarPokemon(idPokemonDelete) {
@@ -164,29 +209,6 @@
                     event.preventDefault();
                 }
             },
-            //filtro
-            filtrar() {
-                const filtros = {
-                    nombre: this.$refs.nombreInput.value.trim() || null, 
-                    tipo: this.selectedPokemonTipo === '0' ? null : this.selectedPokemonTipo, 
-                    apodo: this.$refs.apodoInput.value.trim() || null, 
-                    sexo: this.selectedPokemonSexo === '2' ? null : this.selectedPokemonSexo,
-                };
-                
-                apiclient.pokemones.getPokemonesFiltro(
-                    filtros.nombre,
-                    filtros.tipo,
-                    filtros.apodo,
-                    filtros.sexo,
-                )
-                    .then(res => {
-                        this.pokemones = res.data.pokemon;
-                    })
-                    .catch(error => {
-                        console.error('Error al filtrar pokemones:', error);
-                        this.pokemones = [];
-                    });
-            },
             crearPDF() {
                 const doc = new jsPDF();
                 doc.text('Lista de Pokemones', 10, 10);
@@ -204,7 +226,19 @@
                     },
                 });
                 doc.save('pokemones.pdf');
-            }
+            },
+            nextPage() {
+                if (this.currentPage < this.pageCount - 1) {
+                    this.currentPage++;
+                    this.getPokemones();
+                }
+            },
+            prevPage() {
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                    this.getPokemones();
+                }
+            },
         }
     };
 </script>

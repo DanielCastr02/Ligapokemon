@@ -128,13 +128,56 @@ export const deleteRegistrosByPokemonId = (req, res) => {
 export const getRegistrosFiltro = (req, res) => {
     const idtrainer = req.query.idtrainer === undefined ? null: Number(req.query.idtrainer);
     const idpokemon = req.query.idpokemon === undefined ? null: Number(req.query.idpokemon);
+    const limit = req.query.limit === undefined ? null : Number(req.query.limit);
+    const offset = req.query.offset === undefined ? null : Number(req.query.offset);
+
+    console.log({
+        idtrainer: idtrainer,
+        idpokemon: idpokemon,
+        limit: limit,
+        offset: offset
+    })
+
+    const query = `
+        SELECT * FROM getRegistrosFiltro(
+            $1::INT, 
+            $2::INT,
+            $3::INT,
+            $4::INT
+        );
+    `;
+    pool.query(
+        query,
+        [
+            idtrainer,
+            idpokemon,
+            limit,
+            offset
+        ],
+        (error, results) => {
+            if (error) {
+                console.error('Error getting registros details:', error);
+                res.status(500).send('Error getting registro details');
+            } else if (results.rows.length === 0) {
+                res.status(404).json({ message: 'Registro details not found' });
+            } else {
+                res.status(200).json({ message: 'Registro details fetched successfully', registro: results.rows });
+            }
+        }
+    );
+};
+
+export const getRegistrosPDF = (req, res) => {
+    const idtrainer = req.query.idtrainer === undefined ? null: Number(req.query.idtrainer);
+    const idpokemon = req.query.idpokemon === undefined ? null: Number(req.query.idpokemon);
+
     console.log({
         idtrainer: idtrainer,
         idpokemon: idpokemon
     })
 
     const query = `
-        SELECT * FROM getRegistrosFiltro(
+        SELECT * FROM getRegistrosPDF(
             $1::INT, 
             $2::INT
         );

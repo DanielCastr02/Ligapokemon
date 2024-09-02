@@ -83,14 +83,33 @@ export default {
             return axiosinstance.delete(`pokemones/${id}`);
         },
         //filtro
-        getPokemonesFiltro(nombre, tipo, apodo, sexo) {
+        getPokemonesFiltro(nombre, tipo, apodo, sexo, limit, offset) {
+            console.log({
+                    nombre: nombre,
+                    tipo: tipo,
+                    apodo: apodo,
+                    sexo: sexo,
+                    limit: limit,
+                    offset: offset
+            })
+            return axiosinstance.get(`pokemones/filtro`,{
+                params: {
+                    nombre: nombre,
+                    tipo: tipo,
+                    apodo: apodo,
+                    sexo: sexo,
+                    limit: limit,
+                    offset: offset
+            }});
+        },
+        getPokemonesPDF(nombre, tipo, apodo, sexo) {
             console.log({
                     nombre: nombre,
                     tipo: tipo,
                     apodo: apodo,
                     sexo: sexo
             })
-            return axiosinstance.get(`pokemones/filtro`,{
+            return axiosinstance.get(`pokemones/pdf`,{
                 params: {
                     nombre: nombre,
                     tipo: tipo,
@@ -129,12 +148,27 @@ export default {
         getRegistrosByTrainerId(id){
             return axiosinstance.get(`registros/trainer/${id}`);
         },
-        getRegistrosFiltro(idtrainer, idpokemon) {
+        getRegistrosFiltro(idtrainer, idpokemon, limit, offset) {
+            console.log({
+                    idtrainer: idtrainer,
+                    idpokemon: idpokemon,
+                    limit: limit,
+                    offset: offset
+            })
+            return axiosinstance.get(`registros/filtro`,{
+                params: {
+                    idtrainer: idtrainer,
+                    idpokemon: idpokemon,
+                    limit: limit,
+                    offset: offset
+            }});
+        },
+        getRegistrosPDF(idtrainer, idpokemon) {
             console.log({
                     idtrainer: idtrainer,
                     idpokemon: idpokemon,
             })
-            return axiosinstance.get(`registros/filtro`,{
+            return axiosinstance.get(`registros/pdf`,{
                 params: {
                     idtrainer: idtrainer,
                     idpokemon: idpokemon,

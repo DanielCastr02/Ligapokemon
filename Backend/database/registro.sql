@@ -159,21 +159,66 @@ LANGUAGE plpgsql;
 --Filtro dinamico
 CREATE FUNCTION getRegistrosFiltro(
     registro_idtrainer INT DEFAULT NULL,
+    registro_idpokemon INT DEFAULT NULL,
+    registro_limit INT DEFAULT NULL,
+    registro_offset INT DEFAULT NULL
+)
+RETURNS TABLE(
+    id INT,
+    idtrainer INT,
+    idpokemon INT,
+    estado INT,
+    total_count BIGINT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        registro.id, 
+        registro.idtrainer, 
+        registro.idpokemon, 
+        registro.estado,
+        (SELECT COUNT(*) 
+         FROM registro r
+         WHERE (registro_idtrainer IS NULL OR r.idtrainer = registro_idtrainer)
+           AND (registro_idpokemon IS NULL OR r.idpokemon = registro_idpokemon)
+        ) AS total_count
+    FROM registro
+         WHERE (registro_idtrainer IS NULL OR registro.idtrainer = registro_idtrainer)
+           AND (registro_idpokemon IS NULL OR registro.idpokemon = registro_idpokemon)
+    ORDER BY registro.id ASC
+    LIMIT registro_limit OFFSET registro_offset;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION getRegistrosPDF(
+    registro_idtrainer INT DEFAULT NULL,
     registro_idpokemon INT DEFAULT NULL
 )
 RETURNS TABLE(
     id INT,
     idtrainer INT,
     idpokemon INT,
-    estado INT
+    estado INT,
+    total_count BIGINT
 )
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT registro.id, registro.idtrainer, registro.idpokemon, registro.estado
+    SELECT 
+        registro.id, 
+        registro.idtrainer, 
+        registro.idpokemon, 
+        registro.estado,
+        (SELECT COUNT(*) 
+         FROM registro r
+         WHERE (registro_idtrainer IS NULL OR r.idtrainer = registro_idtrainer)
+           AND (registro_idpokemon IS NULL OR r.idpokemon = registro_idpokemon)
+        ) AS total_count
     FROM registro
-    WHERE (registro_idtrainer IS NULL OR registro.idtrainer = registro_idtrainer)
-      AND (registro_idpokemon IS NULL OR registro.idpokemon = registro_idpokemon)
+         WHERE (registro_idtrainer IS NULL OR registro.idtrainer = registro_idtrainer)
+           AND (registro_idpokemon IS NULL OR registro.idpokemon = registro_idpokemon)
     ORDER BY registro.id ASC;
 END;
 $$
