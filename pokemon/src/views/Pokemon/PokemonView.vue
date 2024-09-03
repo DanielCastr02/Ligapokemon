@@ -134,6 +134,7 @@
         data() {
             return {
                 pokemones: [],
+                pokemon_pdf: [],
                 selectedPokemonSexo: '2',
                 selectedPokemonTipo: '0',
 
@@ -210,22 +211,39 @@
                 }
             },
             crearPDF() {
-                const doc = new jsPDF();
-                doc.text('Lista de Pokemones', 10, 10);
-                doc.autoTable({
-                    html: '#pokemonesTable', 
-                    columns: [
-                        { header: 'Id', dataKey: '0' },
-                        { header: 'Nombre', dataKey: '1' },
-                        { header: 'Tipo', dataKey: '2' },
-                        { header: 'Apodo', dataKey: '3' },
-                        { header: 'sexo', dataKey: '4' },
-                    ],
-                    columnStyles: {
-                        4: { display: 'none' }, 
-                    },
+                const filtros = {
+                    nombre: this.$refs.nombreInput.value.trim() || null,
+                    tipo: this.selectedPokemonTipo === '0' ? null : this.this.selectedPokemonTipo,
+                    apodo: this.$refs.apodoInput.value.trim() || null,
+                    sexo: this.selectedPokemonSexo === '2' ? null : this.selectedPokemonSexo,
+                };
+                apiclient.pokemones.getPokemonesPDF(
+                    filtros.nombre,
+                    filtros.tipo,
+                    filtros.apodo,
+                    filtros.sexo
+                )
+                .then(res => {
+                    this.pokemon_pdf = res.data.pokemon; 
+                    const doc = new jsPDF();
+                    doc.text('Lista de Pokemones', 10, 10);
+                    doc.autoTable({
+                        head: [['Id', 'Nombre', 'Tipo', 'Apodo', 'Sexo']],
+                        body: this.pokemon_pdf.map(pokemon => [
+                            pokemon.id,
+                            pokemon.nombre,
+                            pokemon.tipo,
+                            pokemon.apodo,
+                            pokemon.sexo === 0 ? 'Macho' : 'Hembra'
+                        ]),
+                    });
+
+                    doc.save('pokemones.pdf');
+                })
+                .catch(error => {
+                    console.error("Error al obtener los pokemones:", error);
+                    this.errorMessage = "No se pudieron cargar los pokemones. Por favor, inténtelo de nuevo más tarde.";
                 });
-                doc.save('pokemones.pdf');
             },
             nextPage() {
                 if (this.currentPage < this.pageCount - 1) {

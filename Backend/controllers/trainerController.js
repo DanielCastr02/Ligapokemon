@@ -187,7 +187,7 @@ export const getTrainersPDF = (req, res) => {
             } else if (results.rows.length === 0) {
                 res.status(404).json({ message: 'Trainer details not found' });
             } else {
-                res.status(200).json({ message: 'Trainer details fetched successfully', trainer_pdf: results.rows });
+                res.status(200).json({ message: 'Trainer details fetched successfully', trainer: results.rows });
             }
         }
     );

@@ -292,34 +292,40 @@
                     filtros.dobFin
                 )       
                 .then(res => {
-                    this.trainer_pdf = res.data.trainer_pdf; 
-                    //this.totalItems = res.data.trainer_pdf[0].total_count;
+                    this.trainer_pdf = res.data.trainer; 
+                    const doc = new jsPDF();
+                    doc.text('Lista de Entrenadores', 10, 10);
+                    doc.autoTable({
+                        head: [['Id', 'Sexo', 'Nombre', 'Edad', 'DOB', 'Estado']],
+                        body: this.trainer_pdf.map(trainer => [
+                            trainer.id,
+                            trainer.sexo === 0 ? 'Chico' : 'Chica',
+                            trainer.nombre,
+                            trainer.edad,
+                            trainer.dob.slice(0,10),
+                            trainer.estado === 0 ? 'Inactivo' : 'Activo'
+                        ]),
+                    });
+
+                    doc.save('trainers.pdf');
                 })
                 .catch(error => {
                     console.error("Error al obtener los entrenadores:", error);
                     this.errorMessage = "No se pudieron cargar los entrenadores. Por favor, inténtelo de nuevo más tarde.";
                 });
-
-                const doc = new jsPDF();
-                doc.text('Lista de Entrenadores', 10, 10);
-                doc.autoTable({
-                    head: [['Id', 'Sexo', 'Nombre', 'Edad', 'DOB', 'Estado']],
-                    body: this.trainer_pdf.map(trainer => [trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob.slice(0,10), trainer.estado === 0 ? 'Inactivo' : 'Activo' ])
-                });
-                doc.save('trainers.pdf');
-                },
-                nextPage() {
-                    if (this.currentPage < this.pageCount - 1) {
-                        this.currentPage++;
-                        this.getTrainers();
-                    }
-                },
-                prevPage() {
-                    if (this.currentPage > 0) {
-                        this.currentPage--;
-                        this.getTrainers();
-                    }
-                },
+            },
+            nextPage() {
+                if (this.currentPage < this.pageCount - 1) {
+                    this.currentPage++;
+                    this.getTrainers();
+                }
+            },
+            prevPage() {
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                    this.getTrainers();
+                }
+            },
     }
 };
 </script>

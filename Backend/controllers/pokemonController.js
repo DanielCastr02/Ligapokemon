@@ -146,7 +146,7 @@ export const getPokemonesPDF = (req, res) => {
             nombre ,
             tipo ,  
             apodo , 
-            sexo ,  
+            sexo
         ],
         (error, results) => {
             if (error) {

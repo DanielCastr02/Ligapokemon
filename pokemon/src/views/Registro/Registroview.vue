@@ -106,6 +106,7 @@
         data() {
             return {
                 registros: [],
+                registros_pdf: [],
 
                 currentPage: 0,
                 pageSize: 10, 
@@ -185,21 +186,34 @@
                 }
             },
             crearPDF() {
-                const doc = new jsPDF();
-                doc.text('Lista de Registros', 10, 10);
-                doc.autoTable({
-                    html: '#registrosTable', 
-                    columns: [
-                        { header: 'Id', dataKey: '0' },
-                        { header: 'IdTrainer', dataKey: '1' },
-                        { header: 'IdPokemon', dataKey: '2' },
-                        { header: 'Estado', dataKey: '3' },
-                    ],
-                    columnStyles: {
-                        3: { display: 'none' }, 
-                    },
+                const filtros = {
+                    idtrainer: this.$refs.idTrainerInput.value.trim() || null,
+                    idpokemon: this.$refs.idPokemonInput.value.trim() || null
+                };
+                apiclient.registros.getRegistrosPDF(
+                    filtros.idtrainer,
+                    filtros.idpokemon
+                )
+                .then(res => {
+                    this.registros_pdf = res.data.registro; 
+                    const doc = new jsPDF();
+                    doc.text('Lista de Registros', 10, 10);
+                    doc.autoTable({
+                        head: [['Id', 'IdTrainer', 'IdPokemon', 'Estado']],
+                        body: this.registros_pdf.map(registro => [
+                            registro.id,
+                            registro.idtrainer,
+                            registro.idpokemon,
+                            registro.estado === 0 ? 'Inactivo' : 'Activo'
+                        ]),
+                    });
+
+                    doc.save('registros.pdf');
+                })
+                .catch(error => {
+                    console.error("Error al obtener los registros:", error);
+                    this.errorMessage = "No se pudieron cargar los registros. Por favor, inténtelo de nuevo más tarde.";
                 });
-                doc.save('registros.pdf');
             },
             nextPage() {
                 if (this.currentPage < this.pageCount - 1) {

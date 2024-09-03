@@ -175,8 +175,7 @@ BEGIN
         AND (pokemon_tipo IS NULL OR  pokemon.tipo = pokemon_tipo)
         AND (pokemon_apodo IS NULL OR  pokemon.apodo ILIKE '%' || pokemon_apodo || '%')
         AND (pokemon_sexo IS NULL OR  pokemon.sexo = pokemon_sexo)
-    ORDER BY pokemon.id ASC
-    LIMIT pokemon_limit OFFSET pokemon_offset;
+    ORDER BY pokemon.id ASC;
 END;
 $$
 LANGUAGE plpgsql;
