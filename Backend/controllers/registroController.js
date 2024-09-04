@@ -1,4 +1,19 @@
 import pool from "../pool.js";
+import { check, validationResult } from 'express-validator';
+
+const RegistroBodyValidate = [
+    check('idtrainer').isInt().withMessage('El idTrainer debe ser un número.'),
+    check('idpokemon').isInt().withMessage('El idPokemon debe ser un número.'),
+];
+
+const paginationValidate = [
+    check('limit').isInt().withMessage('El límite debe ser un número.'),
+    check('offset').isInt().withMessage('El offset debe ser un número.')
+]
+
+const idRegistroValidate = [
+    check('id').isInt().withMessage('El id debe ser un número.')
+]
 
 export const getRegistros = (req, res) => {
     pool.query('SELECT * FROM getRegistros();', (error, results) => {
@@ -12,9 +27,17 @@ export const getRegistros = (req, res) => {
     });
 }
 
-export const getRegistroById = (req, res) => {
+export const getRegistroById = [
+    idRegistroValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
-    pool.query('SELECT * FROM getRegistroById($1);', [id], (error, results) => {
+
+    pool.query('SELECT * FROM getRegistroById($1::INT);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -23,10 +46,18 @@ export const getRegistroById = (req, res) => {
             res.status(201).json({message : 'Registro fetched succesfully', registro: results.rows});
         }
     });
-}
+}];
 
-export const createRegistro = (req, res) => {
+export const createRegistro = [
+    RegistroBodyValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const registro = req.body;
+
     pool.query(
         'SELECT createRegistro($1::json);',
         [registro],
@@ -39,13 +70,22 @@ export const createRegistro = (req, res) => {
             res.status(201).json({message : 'Registro created succesfully', registro: registro});
         }
     });
-}
+}];
 
 
-export const updateRegistro = (req, res) => {
+export const updateRegistro = [
+    idRegistroValidate,
+    RegistroBodyValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
     const registro = req.body;
-    pool.query('SELECT updateRegistro($1, $2::json);', 
+
+    pool.query('SELECT updateRegistro($1::INT, $2::json);', 
         [id, registro], 
         (error) => {
         if(error){
@@ -56,10 +96,18 @@ export const updateRegistro = (req, res) => {
             res.status(201).json({message : 'Registro updated succesfully', registro: registro});
         }
     });
-}
+}];
 
-export const deleteRegistro = (req, res) => {
+export const deleteRegistro = [
+    idRegistroValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
+
     pool.query('SELECT deleteRegistro($1);', [id], (error) => {
         if(error){
             console.error('Error deleting registro:', error);
@@ -69,12 +117,19 @@ export const deleteRegistro = (req, res) => {
             res.status(201).json({message : 'Registro deleted succesfully'});
         }
     });
-    
-}
+}];
 
-export const getRegistroDetalle = (req, res) => {
+export const getRegistroDetalle = [
+    idRegistroValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
-    pool.query('SELECT * FROM getRegistroDetalle($1);', [id], (error, results) => {
+
+    pool.query('SELECT * FROM getRegistroDetalle($1::INT);', [id], (error, results) => {
             if (error) {
                 console.error('Error getting registro:', error);
                 res.status(500).send('Error getting registro');
@@ -86,10 +141,18 @@ export const getRegistroDetalle = (req, res) => {
             }
         }
     );
-}
-export const getRegistrosByTrainerId = (req, res) => {
+}];
+export const getRegistrosByTrainerId = [
+    idRegistroValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
-    pool.query('SELECT * FROM getRegistrosByTrainerId($1);', [id], (error, results) => {
+
+    pool.query('SELECT * FROM getRegistrosByTrainerId($1::INT);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -98,11 +161,19 @@ export const getRegistrosByTrainerId = (req, res) => {
             res.status(201).json({message : 'Registro fetched succesfully', registro: results.rows});
         }
     });
-}
+}];
 
-export const deleteRegistrosByTrainerId = (req, res) => {
+export const deleteRegistrosByTrainerId = [
+    idRegistroValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
-    pool.query('SELECT deleteRegistrosByTrainerId($1);', [id], (error, results) => {
+
+    pool.query('SELECT deleteRegistrosByTrainerId($1::INT);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -111,10 +182,19 @@ export const deleteRegistrosByTrainerId = (req, res) => {
             res.status(201).json({message : 'Registro fetched succesfully', registro: results});
         }
     });
-}
-export const deleteRegistrosByPokemonId = (req, res) => {
+}];
+
+export const deleteRegistrosByPokemonId = [
+    idRegistroValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const id = req.params.id;
-    pool.query('SELECT deleteRegistrosByPokemonId($1);', [id], (error, results) => {
+
+    pool.query('SELECT deleteRegistrosByPokemonId($1::INT);', [id], (error, results) => {
         if(error){
             console.error('Error getting registro:', error);
             res.status(500).send('Error getting registro');
@@ -123,9 +203,16 @@ export const deleteRegistrosByPokemonId = (req, res) => {
             res.status(201).json({message : 'Registro fetched succesfully', registro: results});
         }
     });
-}
-//filtro
-export const getRegistrosFiltro = (req, res) => {
+}];
+
+export const getRegistrosFiltro = [
+    paginationValidate,
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
     const idtrainer = req.query.idtrainer === undefined ? null: Number(req.query.idtrainer);
     const idpokemon = req.query.idpokemon === undefined ? null: Number(req.query.idpokemon);
     const limit = req.query.limit === undefined ? null : Number(req.query.limit);
@@ -165,9 +252,10 @@ export const getRegistrosFiltro = (req, res) => {
             }
         }
     );
-};
+}];
 
 export const getRegistrosPDF = (req, res) => {
+    
     const idtrainer = req.query.idtrainer === undefined ? null: Number(req.query.idtrainer);
     const idpokemon = req.query.idpokemon === undefined ? null: Number(req.query.idpokemon);
 

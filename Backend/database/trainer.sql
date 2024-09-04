@@ -4,17 +4,15 @@ CREATE TABLE trainer (
     nombre VARCHAR(100) NOT NULL,
     edad INT,
     dob DATE,
-    estado INT DEFAULT 0
+    estado INT DEFAULT 0,
+    email VARCHAR(100) DEFAULT 'werox115@gmail.com',
 );
 
-INSERT INTO trainer (sexo, nombre, edad, dob,estado) VALUES (0, 'Ash', 10, '2000-05-22',1);
-INSERT INTO trainer (sexo, nombre, edad, dob,estado) VALUES (1, 'maria', 13, '2003-07-15',1);
-
 ALTER TABLE trainer ADD COLUMN estado INT;
-ALTER TABLE trainer MODIFY estado INT DEFAULT 0;
-ALTER TABLE trainer MODIFY sexo INT NOT NULL;
-ALTER TABLE trainer MODIFY nombre VARCHAR(100) NOT NULL;
-
+ALTER TABLE trainer ALTER estado INT DEFAULT 0;
+ALTER TABLE trainer ALTER sexo INT NOT NULL;
+ALTER TABLE trainer ALTER nombre VARCHAR(100) NOT NULL;
+ALTER TABLE trainer ADD COLUMN email VARCHAR(100)  DEFAULT 'werox115@gmail.com';
 
 --FUNCIONES POSTGRES LANGUAGE PLPGSQL
 
@@ -26,7 +24,8 @@ RETURNS TABLE(
     nombre VARCHAR,
     edad INT,
     dob DATE,
-    estado INT
+    estado INT,
+    email VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -36,7 +35,8 @@ BEGIN
         trainer.nombre, 
         trainer.edad, 
         trainer.dob, 
-        trainer.estado
+        trainer.estado,
+        trainer.email
     FROM trainer
     ORDER BY trainer.id ASC;
 END;
@@ -51,12 +51,20 @@ RETURNS TABLE(
     nombre VARCHAR,
     edad INT,
     dob DATE,
-    estado INT
+    estado INT,
+    email VARCHAR
 )
 AS $$
 BEGIN
     RETURN QUERY 
-    SELECT trainer.id, trainer.sexo, trainer.nombre, trainer.edad, trainer.dob, trainer.estado 
+    SELECT 
+    trainer.id, 
+    trainer.sexo, 
+    trainer.nombre, 
+    trainer.edad, 
+    trainer.dob, 
+    trainer.estado, 
+    trainer.email
     FROM trainer WHERE trainer.id = trainer_id;
 END;
 $$
@@ -67,12 +75,13 @@ CREATE FUNCTION createTrainer(p_trainer JSON)
 RETURNS VOID
 AS $$
 BEGIN
-    INSERT INTO trainer (sexo, nombre, edad, dob)
+    INSERT INTO trainer (sexo, nombre, edad, dob, email)
     VALUES (
         (p_trainer->>'sexo')::INT,
         p_trainer->>'nombre',
         (p_trainer->>'edad')::INT,
-        (p_trainer->>'dob')::DATE
+        (p_trainer->>'dob')::DATE,
+        p_trainer->>'email'
     );
 END;
 $$ LANGUAGE plpgsql;
@@ -87,7 +96,8 @@ BEGIN
     nombre = p_trainer->>'nombre', 
     edad = (p_trainer->>'edad')::INT, 
     dob = (p_trainer->>'dob')::DATE, 
-    estado = (p_trainer->>'estado')::INT  
+    estado = (p_trainer->>'estado')::INT,
+    email = p_trainer->>'email'  
     WHERE id = trainer_id;
 END;
 $$
@@ -143,6 +153,8 @@ CREATE FUNCTION getTrainersFiltro(
     trainer_edad INT DEFAULT NULL,
     trainer_dobInicio DATE DEFAULT NULL,
     trainer_dobFin DATE DEFAULT NULL,
+    trainer_estado INT DEFAULT NULL,
+    trainer_email VARCHAR DEFAULT NULL,
     trainer_limit INT DEFAULT NULL,
     trainer_offset INT DEFAULT NULL
 )
@@ -153,6 +165,7 @@ RETURNS TABLE(
     edad INT,
     dob DATE,
     estado INT,
+    email VARCHAR,
     total_count BIGINT
 )
 AS $$
@@ -165,18 +178,23 @@ BEGIN
         trainer.edad, 
         trainer.dob, 
         trainer.estado,
+        trainer.email,
         (SELECT COUNT(*) 
          FROM trainer t
          WHERE (trainer_sexo IS NULL OR t.sexo = trainer_sexo)
            AND (trainer_nombre IS NULL OR t.nombre ILIKE '%' || trainer_nombre || '%')
            AND (trainer_edad IS NULL OR t.edad = trainer_edad)
            AND (trainer_dobInicio IS NULL OR t.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+           AND (trainer_estado IS NULL OR t.estado = trainer_estado)
+           AND (trainer_email IS NULL OR t.email ILIKE '%' || trainer_email || '%')
         ) AS total_count
     FROM trainer
     WHERE (trainer_sexo IS NULL OR trainer.sexo = trainer_sexo)
       AND (trainer_nombre IS NULL OR trainer.nombre ILIKE '%' || trainer_nombre || '%')
       AND (trainer_edad IS NULL OR trainer.edad = trainer_edad)
       AND (trainer_dobInicio IS NULL OR trainer.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+      AND (trainer_estado IS NULL OR trainer.estado = trainer_estado)
+      AND (trainer_email IS NULL OR trainer.email ILIKE '%' || trainer_email || '%')
     ORDER BY trainer.id ASC
     LIMIT trainer_limit OFFSET trainer_offset;
 END;
@@ -189,7 +207,9 @@ CREATE FUNCTION getTrainersPDF(
     trainer_nombre VARCHAR DEFAULT NULL,
     trainer_edad INT DEFAULT NULL,
     trainer_dobInicio DATE DEFAULT NULL,
-    trainer_dobFin DATE DEFAULT NULL
+    trainer_dobFin DATE DEFAULT NULL,
+    trainer_estado INT DEFAULT NULL,
+    trainer_email VARCHAR DEFAULT NULL
 )
 RETURNS TABLE(
     id INT,
@@ -198,6 +218,7 @@ RETURNS TABLE(
     edad INT,
     dob DATE,
     estado INT,
+    email VARCHAR,
     total_count BIGINT
 )
 AS $$
@@ -210,18 +231,23 @@ BEGIN
         trainer.edad, 
         trainer.dob, 
         trainer.estado,
+        trainer.email,
         (SELECT COUNT(*) 
          FROM trainer t
          WHERE (trainer_sexo IS NULL OR t.sexo = trainer_sexo)
            AND (trainer_nombre IS NULL OR t.nombre ILIKE '%' || trainer_nombre || '%')
            AND (trainer_edad IS NULL OR t.edad = trainer_edad)
            AND (trainer_dobInicio IS NULL OR t.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+           AND (trainer_estado IS NULL OR t.estado = trainer_estado)
+           AND (trainer_email IS NULL OR t.email ILIKE '%' || trainer_email || '%')
         ) AS total_count
     FROM trainer
     WHERE (trainer_sexo IS NULL OR trainer.sexo = trainer_sexo)
       AND (trainer_nombre IS NULL OR trainer.nombre ILIKE '%' || trainer_nombre || '%')
       AND (trainer_edad IS NULL OR trainer.edad = trainer_edad)
       AND (trainer_dobInicio IS NULL OR trainer.dob BETWEEN trainer_dobInicio AND trainer_dobFin)
+      AND (trainer_estado IS NULL OR trainer.estado = trainer_estado)
+      AND (trainer_email IS NULL OR trainer.email ILIKE '%' || trainer_email || '%')
     ORDER BY trainer.id ASC;
 END;
 $$
