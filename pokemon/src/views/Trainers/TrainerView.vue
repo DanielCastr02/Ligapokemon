@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-5">
+    <div class="container mt-4">
         <div class="card">
             <div class="card-header">
                 <h4>Filtrar Trainers:</h4>
@@ -15,7 +15,6 @@
                             <option value="1" :key="1">Chica</option>
                         </select>
                     </div>
-
                     <!-- Filtro por Nombre -->
                     <div class="col-md-2">
                         <label for="nombre" class="form-label">Nombre:</label>
@@ -24,7 +23,7 @@
                         @keypress="validateInputNombre"
                         placeholder="Buscar por nombre" ref="nombreInput"/>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div>
                             <label for="fecha1" class="form-label">DOB Inicio:</label>
                             <input name="fecha1" id="fecha1" type="date" class="form-control" v-model="selectedTrainerDobInicio"/>
@@ -44,6 +43,23 @@
                         @input="getTrainers"
                         @keypress="validateInputEdad" 
                         placeholder="Edad del entrenador" ref="edadInput" />
+                    </div>
+                    <!-- Filtro por Estado -->
+                    <div class="col-md-2">
+                        <label for="estado" class="form-label">Estado:</label>
+                        <select name="estado" id="estado" class="form-control" v-model="selectedTrainerEstado" @change="getTrainers">
+                            <option value="2" :key="2" selected>None</option>
+                            <option value="0" :key="0">Inactivo</option>
+                            <option value="1" :key="1">Activo</option>
+                        </select>
+                    </div>
+                    <!-- Filtro por Email -->
+                    <div class="col-md-2">
+                        <label for="email" class="form-label">Email:</label>
+                        <input name="email" id="email" type="text" class="form-control" 
+                        @input="getTrainers" 
+                        @keypress="validateInputEmail"
+                        placeholder="Buscar por email" ref="emailInput"/>
                     </div>
                 </div>
             </div>
@@ -68,7 +84,8 @@
                         <th>Nombre</th>
                         <th>Edad</th>
                         <th>DOB</th>
-                        <th>estado</th>
+                        <th>Estado</th>
+                        <th>Email</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -82,6 +99,7 @@
                         <td>{{ trainer.dob.slice(0,10) }}</td>
                         <td v-if="trainer.estado == 0"> Inactivo</td>
                         <td v-if="trainer.estado == 1"> Activo</td>
+                        <td>{{ trainer.email }}</td>
                         <td class="text-center">
                             <button v-if="trainer.estado == 0" class="btn btn-success" @click="cambiarEstado(trainer.id)">
                                 Activar
@@ -134,7 +152,8 @@
             return {
                 trainers: [],
                 trainer_pdf: [],
-                selectedTrainerSexo: '2',  
+                selectedTrainerSexo: '2',
+                selectedTrainerEstado: '2',
                 selectedTrainerDobInicio: '',  
                 selectedTrainerDobFin: '',  
 
@@ -151,6 +170,7 @@
                         edad:'',
                         dob: '',
                         estado: '',
+                        email: '',
                         total_count: '',
                     },
                     registro:{
@@ -173,6 +193,8 @@
                     edad: this.$refs.edadInput.value.trim() || null,
                     dobInicio: this.selectedTrainerDobInicio || null,
                     dobFin: this.selectedTrainerDobFin || null,
+                    estado: this.selectedTrainerEstado === '2' ? null : this.selectedTrainerEstado,
+                    email: this.$refs.emailInput.value.trim() || null,
                     limit: this.pageSize,
                     offset: this.currentPage * this.pageSize
                 };
@@ -183,6 +205,8 @@
                     filtros.edad,
                     filtros.dobInicio,
                     filtros.dobFin,
+                    filtros.estado,
+                    filtros.email,
                     filtros.limit,
                     filtros.offset
                 )
@@ -228,6 +252,7 @@
                                 edad:'',
                                 dob: '',
                                 estado: '',
+                                email: '',
                             };
                         }
                         if (this.model.trainer.estado === 0) {
@@ -263,14 +288,21 @@
             //KEYPRESS
             validateInputNombre(event) {
                 const char = String.fromCharCode(event.keyCode);
-                const regex = /^[A-Za-z\s]+$/;
+                const regex = /^[A-Za-z]+$/;
                 if (!regex.test(char)) {
                     event.preventDefault();
                 }
             },
             validateInputEdad(event) {
                 const char = String.fromCharCode(event.keyCode);
-                const regex = /^[0-9,$]*$/;
+                const regex = /^[0-9]*$/;
+                if (!regex.test(char)) {
+                    event.preventDefault();
+                }
+            },
+            validateInputEmail(event) {
+                const char = String.fromCharCode(event.keyCode);
+                const regex = /^[A-Za-z0-9@._]*$/;
                 if (!regex.test(char)) {
                     event.preventDefault();
                 }
@@ -281,7 +313,9 @@
                     nombre: this.$refs.nombreInput.value.trim() || null,
                     edad: this.$refs.edadInput.value.trim() || null,
                     dobInicio: this.selectedTrainerDobInicio || null,
-                    dobFin: this.selectedTrainerDobFin || null
+                    dobFin: this.selectedTrainerDobFin || null,
+                    estado: this.selectedTrainerEstado === '2' ? null : this.selectedTrainerEstado,
+                    email: this.$refs.emailInput.value.trim() || null,
                 };
 
                 apiclient.trainers.getTrainersPDF(
@@ -289,21 +323,24 @@
                     filtros.nombre,
                     filtros.edad,
                     filtros.dobInicio,
-                    filtros.dobFin
+                    filtros.dobFin,
+                    filtros.estado,
+                    filtros.email
                 )       
                 .then(res => {
                     this.trainer_pdf = res.data.trainer; 
                     const doc = new jsPDF();
                     doc.text('Lista de Entrenadores', 10, 10);
                     doc.autoTable({
-                        head: [['Id', 'Sexo', 'Nombre', 'Edad', 'DOB', 'Estado']],
+                        head: [['Id', 'Sexo', 'Nombre', 'Edad', 'DOB', 'Estado', 'Email']],
                         body: this.trainer_pdf.map(trainer => [
                             trainer.id,
                             trainer.sexo === 0 ? 'Chico' : 'Chica',
                             trainer.nombre,
                             trainer.edad,
                             trainer.dob.slice(0,10),
-                            trainer.estado === 0 ? 'Inactivo' : 'Activo'
+                            trainer.estado === 0 ? 'Inactivo' : 'Activo',
+                            trainer.email
                         ]),
                     });
 

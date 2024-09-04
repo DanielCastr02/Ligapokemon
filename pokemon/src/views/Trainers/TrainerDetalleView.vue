@@ -55,37 +55,29 @@ import apiclient from '../../apiclient.js'
                 mensaje: 0,
                 registros: [],
                 model:{
-                    registro:{
-                        trainer_id: '',
-                        trainer_nombre: '',
-                        pokemon_id: '',
-                        pokemon_nombre: '',
-                        pokemon_tipo: '',
-                        pokemon_apodo: '',
-                        pokemon_sexo: '',
-                    },
                     trainer:{
                         nombre: '',
+                    },
+                    pokemon:{
+                        id: '',
+                        nombre: '',
+                        tipo: '',
+                        apodo: '',
+                        sexo: '',
                     }
                 }
             }
         },
         mounted(){
             this.getRegistro(this.$route.params.id);
-            this.getTrainerByID(this.$route.params.id);
         },
         methods:{
             getRegistro(id) {
                 apiclient.trainers.getTrainerDetalle(id).then(res => {
                     this.registros = res.data.registro;
+                    this.model.trainer.nombre = res.data.registro[0].trainer_nombre;
                 });
-            },
-            getTrainerByID(id) {
-                apiclient.trainers.getTrainerById(id).then(res => {
-                    const trainerData = res.data.trainer[0];
-                    this.model.trainer.nombre = trainerData.nombre;
-                });
-            },
+            }
         }
 }
 </script>

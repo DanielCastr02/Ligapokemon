@@ -24,13 +24,15 @@ export default {
         getTrainerDetalle(id){
             return axiosinstance.get(`trainers/detalle/${id}`);
         },
-        getTrainersFiltro(sexo, nombre, edad, dobInicio, dobFin,limit, offset) {
+        getTrainersFiltro(sexo, nombre, edad, dobInicio, dobFin, estado, email, limit, offset) {
             console.log({
                 sexo: sexo,
                     nombre: nombre,
                     edad: edad,
                     dobInicio: dobInicio,
                     dobFin: dobFin,
+                    estado: estado,
+                    email: email,
                     limit: limit,
                     offset: offset
             })
@@ -41,6 +43,8 @@ export default {
                     edad: edad,
                     dobInicio: dobInicio,
                     dobFin: dobFin,
+                    estado: estado,
+                    email: email,
                     limit: limit,
                     offset: offset 
             }});
@@ -84,14 +88,6 @@ export default {
         },
         //filtro
         getPokemonesFiltro(nombre, tipo, apodo, sexo, limit, offset) {
-            console.log({
-                    nombre: nombre,
-                    tipo: tipo,
-                    apodo: apodo,
-                    sexo: sexo,
-                    limit: limit,
-                    offset: offset
-            })
             return axiosinstance.get(`pokemones/filtro`,{
                 params: {
                     nombre: nombre,
@@ -149,12 +145,6 @@ export default {
             return axiosinstance.get(`registros/trainer/${id}`);
         },
         getRegistrosFiltro(idtrainer, idpokemon, limit, offset) {
-            console.log({
-                    idtrainer: idtrainer,
-                    idpokemon: idpokemon,
-                    limit: limit,
-                    offset: offset
-            })
             return axiosinstance.get(`registros/filtro`,{
                 params: {
                     idtrainer: idtrainer,
