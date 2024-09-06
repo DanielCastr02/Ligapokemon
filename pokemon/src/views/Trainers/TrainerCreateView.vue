@@ -94,6 +94,7 @@ import apiclient from '../../apiclient.js'
         methods:{
             checked(){
                 this.createTrainer();
+                this.sendEmail();
                 this.$router.push('/trainers');
             },
             createTrainer(){
@@ -116,6 +117,27 @@ import apiclient from '../../apiclient.js'
                     console.error(error)
                 }
                 alert('Datos Guardados con exito!');
+            },
+            sendEmail(){
+                try {
+                    apiclient.trainers.sendEmail(this.model.trainer).then(res =>{
+                        console.log(this.model);
+                        if(res.data.affectedRows == 1){
+                            this.model.trainer = {
+                                sexo:'',
+                                nombre:'',
+                                edad:'',
+                                dob: '',
+                                estado: '',
+                                email: '',
+                            }
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error(error)
+                }
+                alert('Email Enviado con exito!');
             },
             calculateAge(){
                 const dob = new Date(this.model.trainer.dob);

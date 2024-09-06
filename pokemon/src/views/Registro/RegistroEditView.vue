@@ -62,17 +62,11 @@ import apiclient from '../../apiclient.js'
                     },
                     trainer: {
                         id: '',
-                        sexo: '',
                         nombre: '',
-                        edad: '',
-                        dob: '',
                     },
                     pokemon: {
                         id: '',
-                        nombre: '',
-                        tipo: '',
                         apodo: '',
-                        sexo: '',
                     }
                 }
             }
@@ -118,9 +112,8 @@ import apiclient from '../../apiclient.js'
             },
             getTrainer(id) {
                 apiclient.trainers.getTrainerById(id).then(res => {
-                    const trainerData = res.data.trainer[0];
-                    this.model.trainer.id = trainerData.id;
-                    this.model.trainer.nombre = trainerData.nombre;
+                    this.model.trainer.id = res.data.trainer[0].id;
+                    this.model.trainer.nombre = res.data.trainer[0].nombre;
                 });
             },
             loadPokemonDetails() {
@@ -138,17 +131,13 @@ import apiclient from '../../apiclient.js'
             },
             getRegistro(id) {
                 apiclient.registros.getRegistroDetalle(id).then(res => {
-                    const registroData = res.data.registro;
-
-                    //Registro
+                    const registroData = res.data.registro[0];
                     this.model.registro.id = registroData.id;
-                    this.model.registro.idtrainer = registroData.trainer_id;
-                    this.model.registro.idpokemon = registroData.pokemon_id;
-                    //Trainer
+                    this.model.registro.idtrainer = registroData.idtrainer;
+                    this.model.registro.idpokemon = registroData.idpokemon;
                     this.model.trainer.id = registroData.trainer_id;
-                    this.model.trainer.nombre = registroData.trainer_nombre;
-                    //Pokemon
                     this.model.pokemon.id = registroData.pokemon_id;
+                    this.model.trainer.nombre = registroData.trainer_nombre;
                     this.model.pokemon.apodo = registroData.pokemon_apodo;
                 });
             }

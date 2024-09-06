@@ -1,5 +1,5 @@
-import {Router} from 'express';
-import {getTrainers, getTrainerById, createTrainer, deleteTrainer, updateTrainer, getTrainerDetalle, getTrainersFiltro, getTrainersPDF} from '../controllers/trainerController.js';
+import { Router } from 'express';
+import { getTrainers, getTrainerById, createTrainer, deleteTrainer, updateTrainer, getTrainerDetalle, getTrainersFiltro, getTrainersPDF, sendEmail } from '../controllers/trainerController.js';
 
 const trainersRoutes = Router();
 
@@ -13,6 +13,7 @@ trainersRoutes.post('/api/trainers', createTrainer);
 trainersRoutes.put('/api/trainers/:id', updateTrainer);
 trainersRoutes.delete('/api/trainers/:id', deleteTrainer);
 trainersRoutes.get('/api/trainers/detalle/:id', getTrainerDetalle);
+trainersRoutes.post('/api/trainers/email', sendEmail);
 
 
 

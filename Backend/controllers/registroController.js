@@ -1,9 +1,14 @@
 import pool from "../pool.js";
 import { check, validationResult } from 'express-validator';
 
-const RegistroBodyValidate = [
+const registroBodyValidate = [
     check('idtrainer').isInt().withMessage('El idTrainer debe ser un número.'),
     check('idpokemon').isInt().withMessage('El idPokemon debe ser un número.'),
+];
+
+const registroValidateFiltro = [
+    check('idtrainer').isInt().isEmpty().withMessage('El idTrainer debe ser un número.'),
+    check('idpokemon').isInt().isEmpty().withMessage('El idPokemon debe ser un número.'),
 ];
 
 const paginationValidate = [
@@ -49,7 +54,7 @@ export const getRegistroById = [
 }];
 
 export const createRegistro = [
-    RegistroBodyValidate,
+    registroBodyValidate,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -75,7 +80,7 @@ export const createRegistro = [
 
 export const updateRegistro = [
     idRegistroValidate,
-    RegistroBodyValidate,
+    registroBodyValidate,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -254,7 +259,12 @@ export const getRegistrosFiltro = [
     );
 }];
 
-export const getRegistrosPDF = (req, res) => {
+export const getRegistrosPDF = [
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
     
     const idtrainer = req.query.idtrainer === undefined ? null: Number(req.query.idtrainer);
     const idpokemon = req.query.idpokemon === undefined ? null: Number(req.query.idpokemon);
@@ -287,4 +297,4 @@ export const getRegistrosPDF = (req, res) => {
             }
         }
     );
-};
+}];

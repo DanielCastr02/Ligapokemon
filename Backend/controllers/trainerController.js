@@ -10,6 +10,15 @@ const trainerValidate = [
     check('email').isEmail().trim().escape().normalizeEmail().withMessage('El correo electrónico debe ser válido.')
 ];
 
+const trainerValidateFiltro = [
+    check('sexo').isInt().isIn([0, 1]).isEmpty().withMessage('El sexo debe ser 0 o 1.'),
+    check('nombre').isString().isLength({ min: 1, max: 50 }).escape().isEmpty().withMessage('El nombre debe tener entre 1 y 50 caracteres.'),
+    check('edad').isInt({ min: 18, max: 99 }).isEmpty().withMessage('La edad debe ser un número entre 18 y 99.'),
+    check('dob').isISO8601().isEmpty().withMessage('La fecha de nacimiento debe ser una fecha válida en formato ISO8601.'),
+    check('estado').isInt().isIn([0, 1]).isEmpty().withMessage('El estado debe ser 0 o 1.'),
+    check('email').isEmail().trim().escape().normalizeEmail().isEmpty().withMessage('El correo electrónico debe ser válido.')
+];
+
 const paginationValidate = [
     check('limit').isInt().withMessage('El límite debe ser un número.'),
     check('offset').isInt().withMessage('El offset debe ser un número.')
@@ -31,7 +40,7 @@ export const getTrainers = (req, res) => {
     });
 }
 
-export const getTrainerById =[     
+export const getTrainerById =[
     idTrainerValidate,
     (req, res) => {
         const errors = validationResult(req);
@@ -75,8 +84,6 @@ export const createTrainer = [
         );
     }
 ];
-
-
 
 export const updateTrainer = [
     idTrainerValidate,
@@ -222,6 +229,10 @@ export const getTrainersFiltro = [
 
 export const getTrainersPDF = [
     (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
     const sexo = req.query.sexo === undefined ? null: Number(req.query.sexo);
     const nombre = req.query.nombre === undefined ? null : req.query.nombre;
     const edad = req.query.edad === undefined ? null: Number(req.query.edad);
@@ -274,3 +285,65 @@ export const getTrainersPDF = [
         }
     );
 }];
+
+
+import transporter from '../index.js';
+
+export const sendEmail = (req, res) => {
+    try {
+        const sexo = req.body.sexo === 0 ? 'Chico' : 'Chica'
+        const estado = req.body.estado === 0 ? 'Inactivo' : 'Activo'
+        // Definir los correos a enviar
+        const mailToMe = {
+            from: process.env.SMTP_USER,
+            to: process.env.SMTP_USER,
+            subject: "¡Nuevo Trainer Registrado!",
+            text: `
+            Sexo: ${sexo},
+            Nombre: ${req.body.nombre},
+            Edad: ${req.body.edad},
+            DOB: ${req.body.dob},
+            Estado: ${estado},
+            Email: ${req.body.email}`
+        };
+
+        const mailToTrainer = {
+            from: process.env.SMTP_USER,
+            to: req.body.email,
+            subject: "¡Felicidades! Ha sido registrado como Trainer",
+            text: `
+            Registro Info:
+            Sexo: ${sexo},
+            Nombre: ${req.body.nombre},
+            Edad: ${req.body.edad},
+            DOB: ${req.body.dob},
+            Estado: ${estado},
+            Email: ${req.body.email}`
+        };
+
+        // Enviar correo al trainer
+        transporter.sendMail(mailToTrainer, (err, info) => {
+            if (err) {
+                console.error('Error enviando email al trainer: ', err);
+                return res.status(500).json({ error: 'Error enviando email al trainer' });
+            } else {
+                console.log('Email enviado al trainer: ', info.response);
+
+                // Después de enviar al trainer, enviar el correo al administrador
+                transporter.sendMail(mailToMe, (err, info) => {
+                    if (err) {
+                        console.error('Error enviando email al administrador: ', err);
+                        return res.status(500).json({ error: 'Error enviando email al administrador' });
+                    } else {
+                        console.log('Email enviado al administrador: ', info.response);
+                        return res.status(200).json({ message: 'Correos enviados correctamente', trainer: req.body });
+                    }
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error('Error en el controlador: ', error);
+        return res.status(500).json({ error: 'Error en el servidor' });
+    }
+};

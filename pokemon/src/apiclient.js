@@ -4,6 +4,7 @@ const axiosinstance = axios.create({
     baseURL: 'http://localhost:3000/api/'
 });
 
+
 export default {
     trainers: {
         getTrainers() {
@@ -23,6 +24,9 @@ export default {
         },
         getTrainerDetalle(id){
             return axiosinstance.get(`trainers/detalle/${id}`);
+        },
+        sendEmail(trainer){
+            return axiosinstance.post(`trainers/email`, trainer);
         },
         getTrainersFiltro(sexo, nombre, edad, dobInicio, dobFin, estado, email, limit, offset) {
             console.log({
