@@ -168,5 +168,23 @@ export default {
                     idpokemon: idpokemon,
             }});
         }
-    }
+    },
+
+    usuarios: {
+        getUsuarios() {
+            return axiosinstance.get('usuarios');
+        },
+        getUsuarioById(id) {
+            return axiosinstance.get(`usuarios/${id}`);
+        },
+        createUsuario(usuario) {
+            return axiosinstance.post('usuarios', usuario);
+        },
+        updateUsuario(usuario) {
+            return axiosinstance.put(`usuarios/${usuario.id}`, usuario);
+        },
+        deleteUsuario(id) {
+            return axiosinstance.delete(`usuarios/${id}`);
+        },
+    },
 };

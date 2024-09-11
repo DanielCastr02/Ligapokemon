@@ -8,13 +8,6 @@ const pokemonBodyValidate = [
     check('sexo').isInt().isIn([0, 1]).withMessage('El sexo debe ser 0 o 1.'),
 ];
 
-const pokemonValidateFiltro = [
-    check('nombre').isString().isLength({ min: 1, max: 50 }).escape().isEmpty().withMessage('El nombre debe tener entre 1 y 50 caracteres.'),
-    check('tipo').isString().isLength({ min: 1, max: 50 }).escape().isEmpty().withMessage('El tipo debe tener entre 1 y 50 caracteres.'),
-    check('apodo').isString().isLength({ min: 1, max: 50 }).escape().isEmpty().withMessage('El apodo debe tener entre 1 y 50 caracteres.'),
-    check('sexo').isInt().isIn([0, 1]).isEmpty().withMessage('El sexo debe ser 0 o 1.'),
-];
-
 const paginationValidate = [
     check('limit').isInt().withMessage('El límite debe ser un número.'),
     check('offset').isInt().withMessage('El offset debe ser un número.')
@@ -127,6 +120,7 @@ export const deletePokemon = [
         }
     });
 }]
+
 export const getPokemonesFiltro = [
     paginationValidate,
     (req, res) => {

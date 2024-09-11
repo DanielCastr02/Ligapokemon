@@ -1,9 +1,11 @@
 import express from 'express';
 import pool from './pool.js';
 import cors from 'cors';
+
 import trainersRoutes from './routes/trainersRoutes.js';
 import pokemonRoutes from './routes/pokemonRoutes.js';
-import registrosRoutes from './routes/registroRoutes.js'
+import registrosRoutes from './routes/registroRoutes.js';
+import usuarioRoutes from './routes/usuarioRoutes.js';
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use(express.json());
 app.use(trainersRoutes);
 app.use(pokemonRoutes);
 app.use(registrosRoutes);
+app.use(usuarioRoutes);
 
 app.get('/', ()=>{
     console.log('Here is the rabbit');
@@ -31,6 +34,8 @@ app.get('/', ()=>{
 app.listen(port, () =>
     console.log(`Server listen on port ${port}`)
 );
+
+
 
 
 import nodemailer from 'nodemailer';

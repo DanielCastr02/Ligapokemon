@@ -1,5 +1,5 @@
 <script setup>
-import MenuView from './MenuView.vue'
+import MenuView from './MenuView.vue';
 </script>
 
 <template>

@@ -87,7 +87,6 @@ export const createTrainer = [
 
 export const updateTrainer = [
     idTrainerValidate,
-    trainerValidate,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -291,8 +290,9 @@ import transporter from '../index.js';
 
 export const sendEmail = (req, res) => {
     try {
-        const sexo = req.body.sexo === 0 ? 'Chico' : 'Chica'
-        const estado = req.body.estado === 0 ? 'Inactivo' : 'Activo'
+        const sexo = req.body.sexo === '0' ? 'Chico' : 'Chica';
+        const estado = req.body.estado === '0' ? 'Inactivo' : 'Activo';
+
         // Definir los correos a enviar
         const mailToMe = {
             from: process.env.SMTP_USER,

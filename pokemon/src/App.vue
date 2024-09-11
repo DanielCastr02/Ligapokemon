@@ -1,5 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import { Icon } from "@iconify/vue";
 </script>
 
 <template>
@@ -26,18 +27,17 @@ import { RouterView } from 'vue-router'
               <RouterLink class="navbar-brand" to="/registros">
                 <Icon icon="fa-regular:address-book"></Icon> Registros
               </RouterLink>
+              <RouterLink class="navbar-brand" to="/login">
+                <Icon icon="solar:login-2-linear"></Icon> Login
+              </RouterLink>
             </li>
           </ul>
         </div>
       </div>
     </nav>
   </header>
-
   <RouterView />
 </template>
-<script>
-import { Icon } from "@iconify/vue";
-</script>
 
   
 <style scoped>

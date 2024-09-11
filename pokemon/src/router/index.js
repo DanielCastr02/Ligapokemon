@@ -19,6 +19,10 @@ import RegistroView from '../views/Registro/Registroview.vue'
 import RegistroDetalleView from '../views/Registro/RegistroDetalleView.vue'
 import RegistroEditView from '../views/Registro/RegistroEditView.vue'
 
+//USUARIOS
+import LoginView from '../views/Usuarios/LogInView.vue'
+import SingupView from '../views/Usuarios/SingUpView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +32,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+
     //TRAINERS
     {
       path: '/trainers',
@@ -84,6 +89,18 @@ const router = createRouter({
       path: '/registros/:id/edit',
       name: 'editregistros',
       component: RegistroEditView
+    },
+
+    //USUARIOS
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView
+    },
+    {
+      path: '/singup',
+      name: 'singup',
+      component: SingupView
     },
   ]
 })
