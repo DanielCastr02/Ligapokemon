@@ -1,6 +1,5 @@
 import pool from "../pool.js";
 import { check, validationResult } from 'express-validator';
-import bcrypt from 'bcryptjs';
 
 const usuarioBodyValidate = [
     check('correo').isString().isLength({ min: 1, max: 100 }).escape().withMessage('El correo no debe ser vacio.'),
@@ -26,7 +25,10 @@ export const getUsuarios = (req, res) => {
             console.log('Fetching usuario...');
             res.status(201).json({message : 'usuarios fetched succesfully', usuario: results.rows});
         }
+        
     });
+
+    
 }
 
 export const getUsuarioById = [
@@ -49,42 +51,6 @@ export const getUsuarioById = [
         }
     });
 }];
-
-export const createUsuario = [
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const usuario = req.body;
-  
-      try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(usuario.contraseña, salt);
-        
-        usuario.contraseña = hashedPassword;
-
-        pool.query(
-          'SELECT createUsuario($1::json);',
-          [usuario],
-          (error) => {
-            if (error) {
-              console.error('Error creating usuario:', error);
-              res.status(500).send('Error creating usuario');
-            } else {
-              console.log('Creating usuario...');
-              res.status(201).json({ message: 'Usuario created successfully', usuario });
-            }
-          }
-        );
-      } catch (error) {
-        console.error('Error hashing password:', error);
-        res.status(500).send('Error processing request');
-      }
-    }
-  ];
-
 
 export const updateUsuario = [
     idUsuarioValidate,
@@ -130,5 +96,5 @@ export const deleteUsuario = [
             res.status(201).json({message : 'Usuario deleted succesfully'});
         }
     });
-}]
+}];
 

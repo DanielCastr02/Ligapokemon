@@ -1,21 +1,24 @@
 import { Router } from "express";
 import { getRegistros, getRegistroById, createRegistro, deleteRegistro, updateRegistro, getRegistroDetalle, 
     getRegistrosByTrainerId, deleteRegistrosByTrainerId , deleteRegistrosByPokemonId, getRegistrosFiltro, getRegistrosPDF} from '../controllers/registroController.js'
+import { autorizar } from "../auth.js";
 
 const registroRoutes = Router();
 
-//filtro
-registroRoutes.get('/api/registros/pdf', getRegistrosPDF);
-registroRoutes.get('/api/registros/filtro', getRegistrosFiltro);
+registroRoutes.use(autorizar);
 
-registroRoutes.get('/api/registros', getRegistros);
-registroRoutes.get('/api/registros/:id', getRegistroById);
-registroRoutes.post('/api/registros', createRegistro);
-registroRoutes.put('/api/registros/:id', updateRegistro);
-registroRoutes.delete('/api/registros/:id', deleteRegistro);
-registroRoutes.get('/api/registros/detalle/:id', getRegistroDetalle);
-registroRoutes.delete('/api/registros/trainer/:id', deleteRegistrosByTrainerId);
-registroRoutes.delete('/api/registros/pokemon/:id', deleteRegistrosByPokemonId);
-registroRoutes.get('/api/registros/trainer/:id', getRegistrosByTrainerId);
+//filtro
+registroRoutes.get('/pdf', getRegistrosPDF);
+registroRoutes.get('/filtro', getRegistrosFiltro);
+
+registroRoutes.get('', getRegistros);
+registroRoutes.get('/:id', getRegistroById);
+registroRoutes.post('', createRegistro);
+registroRoutes.put('/:id', updateRegistro);
+registroRoutes.delete('/:id', deleteRegistro);
+registroRoutes.get('/detalle/:id', getRegistroDetalle);
+registroRoutes.delete('/trainer/:id', deleteRegistrosByTrainerId);
+registroRoutes.delete('/pokemon/:id', deleteRegistrosByPokemonId);
+registroRoutes.get('/trainer/:id', getRegistrosByTrainerId);
 
 export default registroRoutes;

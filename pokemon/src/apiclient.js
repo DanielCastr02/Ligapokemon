@@ -1,8 +1,10 @@
 import axios from "axios";
 
 const axiosinstance = axios.create({
-    baseURL: 'http://localhost:3000/api/'
+    baseURL: 'http://localhost:3000/api/',
+    withCredentials: true,
 });
+
 
 
 export default {
@@ -185,6 +187,18 @@ export default {
         },
         deleteUsuario(id) {
             return axiosinstance.delete(`usuarios/${id}`);
-        },
+        }
     },
+
+    auth: {
+        async login(usuario) {
+            return axiosinstance.post('auth/login', usuario);
+        },
+        logout() {
+            return axiosinstance.post('auth/logout');
+        },
+        singup(usuario) {
+            return axiosinstance.post('auth/singup', usuario);
+        },
+    }
 };

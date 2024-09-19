@@ -30,6 +30,9 @@ import { Icon } from "@iconify/vue";
               <RouterLink class="navbar-brand" to="/login">
                 <Icon icon="solar:login-2-linear"></Icon> Login
               </RouterLink>
+              <RouterLink class="navbar-brand navbar-custom" to="/logout">
+                <Icon icon="solar:logout-2-linear"></Icon> Logout
+              </RouterLink>
             </li>
           </ul>
         </div>
@@ -41,8 +44,12 @@ import { Icon } from "@iconify/vue";
 
   
 <style scoped>
-img{
+img {
   width: 60px;
+}
+.navbar-custom {
+  background-color: #e70000;
+  border-radius: 5px;
 }
 
 </style>

@@ -1,11 +1,13 @@
 import express from 'express';
 import pool from './pool.js';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import trainersRoutes from './routes/trainersRoutes.js';
 import pokemonRoutes from './routes/pokemonRoutes.js';
 import registrosRoutes from './routes/registroRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 
@@ -19,13 +21,21 @@ pool.connect((err) => {
     console.log('Successfully connected!!');
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+app.use(cookieParser());
+
+
 app.use(express.json());
 
-app.use(trainersRoutes);
-app.use(pokemonRoutes);
-app.use(registrosRoutes);
-app.use(usuarioRoutes);
+app.use('/api/trainers', trainersRoutes);
+app.use('/api/pokemones', pokemonRoutes);
+app.use('/api/registros', registrosRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/auth', authRoutes);
+
 
 app.get('/', ()=>{
     console.log('Here is the rabbit');

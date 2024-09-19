@@ -1,17 +1,20 @@
 import { Router } from "express";
 import { getPokemon, getPokemonById, createPokemon, deletePokemon, updatePokemon, getPokemonesFiltro, getPokemonesPDF} from "../controllers/pokemonController.js";
+import { autorizar } from "../auth.js";
 
 const pokemonRoutes = Router();
 
-//filtro
-pokemonRoutes.get('/api/pokemones/pdf', getPokemonesPDF);
-pokemonRoutes.get('/api/pokemones/filtro', getPokemonesFiltro);
+pokemonRoutes.use(autorizar);
 
-pokemonRoutes.get('/api/pokemones', getPokemon);
-pokemonRoutes.get('/api/pokemones/:id', getPokemonById);
-pokemonRoutes.post('/api/pokemones', createPokemon);
-pokemonRoutes.put('/api/pokemones/:id', updatePokemon);
-pokemonRoutes.delete('/api/pokemones/:id', deletePokemon);
+//filtro
+pokemonRoutes.get('/pdf', getPokemonesPDF);
+pokemonRoutes.get('/filtro', getPokemonesFiltro);
+
+pokemonRoutes.get('', getPokemon);
+pokemonRoutes.get('/:id', getPokemonById);
+pokemonRoutes.post('', createPokemon);
+pokemonRoutes.put('/:id', updatePokemon);
+pokemonRoutes.delete('/:id', deletePokemon);
 
 
 export default pokemonRoutes;

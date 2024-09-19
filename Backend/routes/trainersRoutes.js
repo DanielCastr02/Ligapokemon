@@ -1,19 +1,22 @@
 import { Router } from 'express';
 import { getTrainers, getTrainerById, createTrainer, deleteTrainer, updateTrainer, getTrainerDetalle, getTrainersFiltro, getTrainersPDF, sendEmail } from '../controllers/trainerController.js';
+import { autorizar } from "../auth.js";
 
 const trainersRoutes = Router();
 
-//filtro
-trainersRoutes.get('/api/trainers/pdf', getTrainersPDF);
-trainersRoutes.get('/api/trainers/filtro', getTrainersFiltro);
+trainersRoutes.use(autorizar);
 
-trainersRoutes.get('/api/trainers', getTrainers);
-trainersRoutes.get('/api/trainers/:id', getTrainerById);
-trainersRoutes.post('/api/trainers', createTrainer);
-trainersRoutes.put('/api/trainers/:id', updateTrainer);
-trainersRoutes.delete('/api/trainers/:id', deleteTrainer);
-trainersRoutes.get('/api/trainers/detalle/:id', getTrainerDetalle);
-trainersRoutes.post('/api/trainers/email', sendEmail);
+//filtro
+trainersRoutes.get('/pdf', getTrainersPDF);
+trainersRoutes.get('/filtro', getTrainersFiltro);
+
+trainersRoutes.get('', getTrainers);
+trainersRoutes.get('/:id', getTrainerById);
+trainersRoutes.post('', createTrainer);
+trainersRoutes.put('/:id', updateTrainer);
+trainersRoutes.delete('/:id', deleteTrainer);
+trainersRoutes.get('/detalle/:id', getTrainerDetalle);
+trainersRoutes.post('/email', sendEmail);
 
 
 

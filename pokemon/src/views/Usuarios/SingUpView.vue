@@ -89,6 +89,10 @@
       };
     },
     methods: {
+      checked() {
+        alert('Usuario creado con éxito');
+        this.$router.push('/login');
+      },
       registro() {
         try {
           apiclient.usuarios.createUsuario(this.model.usuario).then(res =>{
@@ -100,7 +104,9 @@
                       rol: '',
                   }
               }
-          }); 
+          },
+          this.checked()
+        ); 
         } catch (error) {
             console.error(error)
         }

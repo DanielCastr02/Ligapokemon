@@ -86,7 +86,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 --Get Usuario by correo
-CREATE FUNCTION getInicioSesion(correo TEXT)
+CREATE FUNCTION getUsuarioByCorreo(usuario_correo TEXT)
 RETURNS TABLE(
     id INT,
     correo TEXT,
@@ -101,6 +101,7 @@ BEGIN
         usuario.contraseña,
         usuario.rol
     FROM usuario
-    WHERE usuario.correo = correo
+    WHERE usuario.correo = usuario_correo
     ORDER BY usuario.id ASC;
 END;
+$$ LANGUAGE plpgsql;
