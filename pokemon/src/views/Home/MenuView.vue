@@ -1,5 +1,13 @@
 <template>
     <body>
+        <div>
+            <div v-if="!token" class="alert alert-danger" role="alert" style="text-align:center;">
+                <h2> 
+                    Necesita hacer Login
+                    <Icon icon="ph:hand-duotone"/>
+                </h2>
+            </div>
+        </div>
         <div class="container mt-5">
             <div class="text-center">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUvNnPKO-Typ2QEzDjEH500qZQ7KF9DX12Fw&s" class="text-center flex" alt="">
@@ -69,13 +77,19 @@
 </template>
 
 <script>
+    import VueCookies from 'vue-cookies'
     import apiclient from '../../apiclient.js';
+    import { Icon } from "@iconify/vue";
 
     export default {
         name: "registroView",
+        components: {
+            Icon,
+        },
         data() {
             return {
                 mensaje: 0,
+                token: VueCookies.get('token'),
                 trainers: [], 
                 pokemones: [],
                 originalPokemones: [],

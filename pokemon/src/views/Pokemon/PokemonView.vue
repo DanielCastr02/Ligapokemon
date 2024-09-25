@@ -64,7 +64,7 @@
             <div class="card-header">
                 <h4>
                      Pokemones
-                    <RouterLink to="/pokemones/create" class="btn btn-primary float-end btn-custom">
+                    <RouterLink v-if="rol == 1" to="/pokemones/create" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
                     <button class="btn btn-secondary float-end" @click="crearPDF">
@@ -82,7 +82,7 @@
                         <th>Tipo</th>
                         <th>Apodo</th>
                         <th>Sexo</th>
-                        <th></th>
+                        <th v-if="rol == 1"></th>
                     </tr>
                 </thead>
                 <tbody v-if="pokemones.length > 0">
@@ -93,11 +93,11 @@
                         <td>{{ pokemon.apodo }}</td>
                         <td v-if="pokemon.sexo == 0"> Macho</td>
                         <td v-if="pokemon.sexo == 1"> Hembra</td>
-                        <td class="text-center">
-                            <RouterLink :to="{ path: '/pokemon/' + pokemon.id + '/edit' }" class="btn btn-primary btn-custom">
+                        <td v-if="rol == 1" class="text-center">
+                            <RouterLink v-if="rol == 1" :to="{ path: '/pokemon/' + pokemon.id + '/edit' }" class="btn btn-primary btn-custom">
                                 Editar
                             </RouterLink>
-                            <button class="btn btn-danger" @click="borrarPokemon(pokemon.id)">
+                            <button v-if="rol == 1" class="btn btn-danger" @click="borrarPokemon(pokemon.id)">
                                 Borrar
                             </button>
                         </td>
@@ -105,7 +105,7 @@
                 </tbody>
                 <tbody v-else>
                     <tr>
-                        <td colspan="5" style="text-align: center;"> Sin registros!</td>
+                        <td colspan="6" style="text-align: center;"> Sin registros!</td>
                     </tr>
                 </tbody>
             </table>
@@ -125,6 +125,7 @@
     import 'jspdf-autotable'
     import { RouterLink } from 'vue-router';
     import apiclient from '../../apiclient.js';
+    import { store } from '@/store.js';
     
     export default {
         name: "pokemonView",
@@ -157,6 +158,14 @@
         },
         mounted() {
             this.getPokemones();
+            apiclient.auth.me()
+            .then(res => {
+                store.rol = res.data.usuario.rol;
+                this.rol = store.rol;
+            })
+            .catch(err => {
+                console.log(err);
+            });
         },
         methods: {
             getPokemones() {

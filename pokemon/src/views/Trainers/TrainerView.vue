@@ -66,7 +66,7 @@
             <div class="card-header">
                 <h4>
                      Trainers
-                     <RouterLink to="/trainer/create" class="btn btn-primary float-end btn-custom">
+                     <RouterLink v-if="rol == 1" to="/trainer/create" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
                      <button class="btn btn-secondary float-end" @click="crearPDF">
@@ -101,19 +101,19 @@
                         <td v-if="trainer.estado == 1"> Activo</td>
                         <td>{{ trainer.email }}</td>
                         <td class="text-center">
-                            <button v-if="trainer.estado == 0" class="btn btn-success" @click="cambiarEstado(trainer.id)">
+                            <button v-if="trainer.estado == 0 && rol == 1" class="btn btn-success" @click="cambiarEstado(trainer.id)">
                                 Activar
                             </button>
-                            <button v-if="trainer.estado == 1" class="btn btn-danger" @click="cambiarEstado(trainer.id)">
+                            <button v-if="trainer.estado == 1 && rol == 1"  class="btn btn-danger" @click="cambiarEstado(trainer.id)">
                                 Desactivar
                             </button>
-                            <RouterLink :to="{ path: '/trainer/' + trainer.id + '/edit' }" class="btn btn-primary btn-custom">
+                            <RouterLink v-if="rol == 1" :to="{ path: '/trainer/' + trainer.id + '/edit' }" class="btn btn-primary btn-custom">
                                 Editar
                             </RouterLink>
                             <RouterLink :to="{ path: '/trainers/detalle/' + trainer.id }" class="btn btn-primary btn-custom">
                                 Detalle
                             </RouterLink>
-                            <button class="btn btn-danger" @click="borrarTrainer(trainer.id)">
+                            <button v-if="rol == 1" class="btn btn-danger" @click="borrarTrainer(trainer.id)">
                                 Borrar
                             </button>
                         </td>
@@ -121,7 +121,7 @@
                 </tbody>
                 <tbody v-else>
                     <tr>
-                        <td colspan="5" style="text-align: center;"> Sin registros!</td>
+                        <td colspan="8" style="text-align: center;"> Sin registros!</td>
                     </tr>
                 </tbody>
             </table>
@@ -142,6 +142,7 @@
     import 'jspdf-autotable'
     import { RouterLink } from 'vue-router';
     import apiclient from '../../apiclient.js';
+    import { store } from '@/store.js';
     
     export default {
         name: "trainersView",
@@ -150,6 +151,7 @@
         },
         data() {
             return {
+                rol: null,
                 trainers: [],
                 trainer_pdf: [],
                 selectedTrainerSexo: '2',
@@ -184,6 +186,14 @@
         },
         mounted() {
             this.getTrainers();
+            apiclient.auth.me()
+            .then(res => {
+                store.rol = res.data.usuario.rol;
+                this.rol = store.rol;
+            })
+            .catch(err => {
+                console.log(err);
+            });
         },
         methods: {
             getTrainers() {

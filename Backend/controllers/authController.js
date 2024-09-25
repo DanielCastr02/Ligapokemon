@@ -3,40 +3,39 @@ import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-export const registro = [
+export const registro = 
     async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const usuario = req.body;
-  
-      try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(usuario.contraseña, salt);
-        
-        usuario.contraseña = hashedPassword;
-
-        pool.query(
-          'SELECT createUsuario($1::json);',
-          [usuario],
-          (error) => {
-            if (error) {
-              console.error('Error creating usuario:', error);
-              res.status(500).send('Error creating usuario');
-            } else {
-              console.log('Creating usuario...');
-              res.status(201).json({ message: 'Usuario created successfully', usuario });
-            }
-          }
-        );
-      } catch (error) {
-        console.error('Error hashing password:', error);
-        res.status(500).send('Error processing request');
-      }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-];
+
+    const usuario = req.body;
+
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(usuario.contraseña, salt);
+      
+      usuario.contraseña = hashedPassword;
+
+      pool.query(
+        'SELECT createUsuario($1::json);',
+        [usuario],
+        (error) => {
+          if (error) {
+            console.error('Error creating usuario:', error);
+            res.status(500).send('Error creating usuario');
+          } else {
+            console.log('Creating usuario...');
+            res.status(201).json({ message: 'Usuario created successfully', usuario });
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error hashing password:', error);
+      res.status(500).send('Error processing request');
+    }
+};
 
 export const login = 
     (req, res) => {
@@ -68,11 +67,21 @@ export const login =
                 }
                 const token = jwt.sign({
                     id: usuario.id,
-                    correo: usuario.correo
+                    correo: usuario.correo,
+                    rol: usuario.rol
                 },'llaveprivada')
-                res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+                res.cookie('token', token, { maxAge: 900000, });
 
-                res.status(200).json({ message: 'Login exitoso', token: token, usuario: usuario });
+                res.status(200).json({ message: 'Login exitoso', usuario: usuario });
             });
         });
     };
+
+export const me =(req, res) => {
+    const token = req.cookies.token;
+    if(!token){
+        return res.status(401).json({message: 'No estas autorizado'});
+    }
+    const verificado = jwt.verify(token, 'llaveprivada');
+    res.status(200).json({message: 'Estas autorizado', usuario: verificado});
+}

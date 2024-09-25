@@ -54,7 +54,8 @@
   import { Field, ErrorMessage, Form } from 'vee-validate';
   import { toTypedSchema } from '@vee-validate/zod';
   import * as zod from 'zod';
-  import apiclient from '../../apiclient.js';
+  import apiclient from '@/apiclient';
+  
   export default {
       nombre: 'createUsuario',
       components: {Field, ErrorMessage, Form},
@@ -95,7 +96,7 @@
       },
       registro() {
         try {
-          apiclient.usuarios.createUsuario(this.model.usuario).then(res =>{
+          apiclient.auth.singup(this.model.usuario).then(res =>{
               console.log(this.model);
               if(res.data.affectedRows == 1){
                   this.model.usuario = {

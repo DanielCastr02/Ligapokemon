@@ -37,6 +37,7 @@
 
 <script>
 import apiclient from '@/apiclient';
+import { store } from '@/store';
 import { Field, Form } from 'vee-validate';
 
 export default {
@@ -59,7 +60,8 @@ export default {
         apiclient.auth.login(usuario)
           .then(res => {
             console.log(res);
-            this.$router.push('/');
+            store.rol = res.data.usuario.rol;
+            this.$router.go();
           });
       } catch (error) {
         console.log(error);

@@ -29,7 +29,7 @@
             <div class="card-header">
                 <h4>
                      Registros
-                    <RouterLink to="/" class="btn btn-primary float-end btn-custom">
+                    <RouterLink v-if="rol == 1" to="/" class="btn btn-primary float-end btn-custom">
                         Agregar
                     </RouterLink>
                     <button class="btn btn-secondary float-end" @click="crearPDF">
@@ -57,19 +57,19 @@
                         <td v-if="registro.estado == 0"> Inactivo</td>
                         <td v-if="registro.estado == 1"> Activo</td>
                         <td class="text-center">
-                            <button v-if="registro.estado == 0" class="btn btn-success" @click="cambiarEstado(registro.id)">
+                            <button v-if="registro.estado == 0 && rol == 1" class="btn btn-success" @click="cambiarEstado(registro.id)">
                                 Activar
                             </button>
-                            <button v-if="registro.estado == 1" class="btn btn-danger" @click="cambiarEstado(registro.id)">
+                            <button v-if="registro.estado == 1 && rol == 1" class="btn btn-danger" @click="cambiarEstado(registro.id)">
                                 Desactivar
                             </button>
-                            <RouterLink :to="{ path: '/registros/' + registro.id + '/edit' }" class="btn btn-primary btn-custom">
+                            <RouterLink v-if="rol == 1" :to="{ path: '/registros/' + registro.id + '/edit' }" class="btn btn-primary btn-custom">
                                 Editar
                             </RouterLink>
                             <RouterLink :to="{ path: '/registros/detalle/' + registro.id }" class="btn btn-primary btn-custom">
                                 Detalle
                             </RouterLink>
-                            <button class="btn btn-danger" @click="borrarRegistro(registro.id)">
+                            <button v-if="rol == 1" class="btn btn-danger" @click="borrarRegistro(registro.id)">
                                 Borrar
                             </button>
                         </td>
@@ -97,6 +97,7 @@
     import 'jspdf-autotable'
     import { RouterLink } from 'vue-router';
     import apiclient from '../../apiclient.js';
+    import { store } from '@/store.js';
     
     export default {
         name: "registroView",
@@ -105,6 +106,7 @@
         },
         data() {
             return {
+                rol: null,
                 registros: [],
                 registros_pdf: [],
 
@@ -125,6 +127,14 @@
         },
         mounted() {
             this.getRegistros();
+            apiclient.auth.me()
+            .then(res => {
+                store.rol = res.data.usuario.rol;
+                this.rol = store.rol;
+            })
+            .catch(err => {
+                console.log(err);
+            });
         },
         methods: {
             getRegistros() {

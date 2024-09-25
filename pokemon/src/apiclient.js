@@ -200,5 +200,8 @@ export default {
         singup(usuario) {
             return axiosinstance.post('auth/singup', usuario);
         },
+        me() {
+            return axiosinstance.get('auth/me');
+        }
     }
 };

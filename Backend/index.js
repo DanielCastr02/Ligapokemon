@@ -45,9 +45,6 @@ app.listen(port, () =>
     console.log(`Server listen on port ${port}`)
 );
 
-
-
-
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
