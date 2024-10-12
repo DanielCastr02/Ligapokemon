@@ -1,0 +1,20 @@
+# Dockerfile.backend
+FROM node:18
+
+# Establecer el directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Copiar los archivos package.json y package-lock.json
+COPY ./Backend/package*.json ./
+
+# Instalar las dependencias del backend
+RUN npm install
+
+# Copiar el código fuente del backend
+COPY ./Backend .
+
+# Exponer el puerto que usará el backend
+EXPOSE 3000
+
+# Comando para ejecutar el backend
+CMD ["npm", "run", "start"]
